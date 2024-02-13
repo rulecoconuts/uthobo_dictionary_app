@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dictionary_app/accessors/auth_utils_accessor.dart';
+import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/auth/auth.dart';
 import 'package:dictionary_app/services/auth/email_username_password_auth.dart';
 import 'package:email_validator/email_validator.dart';
@@ -8,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_validator/form_validator.dart';
 
-class LoginPage extends HookWidget with AuthUtilsAccessor {
+class LoginPage extends HookWidget
+    with AuthUtilsAccessor, RoutingUtilsAccessor {
   const LoginPage({Key? key}) : super(key: key);
 
   void login(
@@ -31,6 +33,8 @@ class LoginPage extends HookWidget with AuthUtilsAccessor {
           username: !isUsingEmail ? credentials["username"] : null));
 
       // if login is valid, store auth and go to login gate to be redirected to the appropriate page
+      (await authStorage()).put("token", token);
+      router().go("/");
     } finally {
       isLoading.value = false;
       shouldAutoValidateOnUserInteraction.value = true;

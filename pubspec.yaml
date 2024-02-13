@@ -43,6 +43,7 @@ dependencies:
   flutter_hooks: ^0.20.5
   form_validator: ^2.1.1
   email_validator: ^2.1.17
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:

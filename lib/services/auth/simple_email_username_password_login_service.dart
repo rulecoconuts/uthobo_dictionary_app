@@ -22,7 +22,11 @@ class SimpleEmailUsernamePasswordLoginService
       var bearerToken = response.headers.value("AUTHORIZATION");
       return JwtAuth(token: bearerToken!.replaceFirst("Bearer ", ""));
     } on DioException catch (e) {
-      e.type == DioExceptionType.badResponse;
+      if (e.type == DioExceptionType.badResponse) {
+        if (e.response?.statusCode == 403) {
+          // TODO: deserialize and throw response body (error details)
+        }
+      }
       rethrow;
     }
   }
