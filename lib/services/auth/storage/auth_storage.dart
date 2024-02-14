@@ -1,4 +1,4 @@
-import 'package:dictionary_app/services/auth/auth.dart';
+import 'package:dictionary_app/services/auth/login/auth.dart';
 
 abstract interface class AuthStorage {
   Future put(String key, Auth auth);

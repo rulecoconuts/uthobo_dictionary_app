@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dictionary_app/services/auth/auth.dart';
+import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:dictionary_app/services/storage/app_object_storage.dart';

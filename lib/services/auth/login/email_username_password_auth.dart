@@ -1,4 +1,4 @@
-import 'package:dictionary_app/services/auth/auth.dart';
+import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'email_username_password_auth.g.dart';

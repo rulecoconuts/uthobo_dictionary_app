@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:dictionary_app/accessors/auth_utils_accessor.dart';
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
+import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +14,7 @@ class LoginGateWidget extends StatefulWidget {
 }
 
 class _LoginGateWidgetState extends State<LoginGateWidget>
-    with RoutingUtilsAccessor {
+    with RoutingUtilsAccessor, AuthUtilsAccessor {
   @override
   void initState() {
     super.initState();
@@ -20,8 +22,25 @@ class _LoginGateWidgetState extends State<LoginGateWidget>
   }
 
   /// Decide which page the user should be sent to
-  void routeToAppropriatePage() {
-    router().go("/welcome");
+  void routeToAppropriatePage() async {
+    try {
+      Auth? auth = await loginService()
+          .validateOrRefreshAuthInStorage(await authStorage(), "token");
+
+      if (auth == null) {
+        // No auth
+        router().go("/welcome");
+        return;
+      }
+
+      // auth is valid
+      // Get user data and load into cache
+
+      // Go to home page
+      router().go("/language_selection");
+    } catch (e, stackTrace) {
+      router().go("/welcome");
+    }
   }
 
   @override

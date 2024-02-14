@@ -1,4 +1,4 @@
-import 'package:dictionary_app/services/auth/auth.dart';
+import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'jwt_auth.g.dart';

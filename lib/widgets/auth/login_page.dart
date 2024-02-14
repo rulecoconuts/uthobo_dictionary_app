@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dictionary_app/accessors/auth_utils_accessor.dart';
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
-import 'package:dictionary_app/services/auth/auth.dart';
-import 'package:dictionary_app/services/auth/email_username_password_auth.dart';
+import 'package:dictionary_app/services/auth/login/auth.dart';
+import 'package:dictionary_app/services/auth/login/email_username_password_auth.dart';
+import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -35,6 +37,14 @@ class LoginPage extends HookWidget
       // if login is valid, store auth and go to login gate to be redirected to the appropriate page
       (await authStorage()).put("token", token);
       router().go("/");
+    } on ApiError catch (e, stackTrace) {
+      if (e.status == "FORBIDDEN") {
+        error.value = "Incorrect username or password";
+      } else {
+        error.value = "Something went wrong";
+      }
+    } catch (e, stackTrace) {
+      error.value = "Something went wrong";
     } finally {
       isLoading.value = false;
       shouldAutoValidateOnUserInteraction.value = true;

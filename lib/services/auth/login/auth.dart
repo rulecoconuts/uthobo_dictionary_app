@@ -1,5 +1,5 @@
-import 'package:dictionary_app/services/auth/email_username_password_auth.dart';
-import 'package:dictionary_app/services/auth/jwt_auth.dart';
+import 'package:dictionary_app/services/auth/login/email_username_password_auth.dart';
+import 'package:dictionary_app/services/auth/login/jwt_auth.dart';
 
 abstract class Auth {
   String get type;
@@ -16,3 +16,5 @@ abstract class Auth {
     throw UnsupportedError("The supplied Auth type \"$type\" is not supported");
   }
 }
+
+enum AuthValidationErrors { invalidFormat, almostExpired, expired }

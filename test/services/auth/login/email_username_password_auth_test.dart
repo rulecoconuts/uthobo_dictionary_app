@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dictionary_app/services/auth/email_username_password_auth.dart';
+import 'package:dictionary_app/services/auth/login/email_username_password_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
