@@ -53,7 +53,7 @@ class LoginPage extends HookWidget
   }
 
   void goToRegistrationPage() {
-    // TODO: Go to registration page
+    router().go("/register");
   }
 
   Function(String) generateCredentialsEditor(

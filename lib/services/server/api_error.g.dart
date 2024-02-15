@@ -13,6 +13,10 @@ ApiError _$ApiErrorFromJson(Map<String, dynamic> json) => ApiError(
           : DateTime.parse(json['timestamp'] as String),
       message: json['message'] as String?,
       debugMessage: json['debugMessage'] as String?,
+      errorMessages: (json['errorMessages'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as String),
+          ) ??
+          const {},
     );
 
 Map<String, dynamic> _$ApiErrorToJson(ApiError instance) => <String, dynamic>{
@@ -20,4 +24,5 @@ Map<String, dynamic> _$ApiErrorToJson(ApiError instance) => <String, dynamic>{
       'timestamp': instance.timestamp?.toIso8601String(),
       'message': instance.message,
       'debugMessage': instance.debugMessage,
+      'errorMessages': instance.errorMessages,
     };

@@ -8,14 +8,15 @@ class ApiError {
   final DateTime? timestamp;
   final String? message;
   final String? debugMessage;
-  final Map<String, String> errorMessages = {};
 
-  ApiError({
-    required this.status,
-    this.timestamp,
-    this.message,
-    this.debugMessage,
-  });
+  final Map<String, String> errorMessages;
+
+  ApiError(
+      {required this.status,
+      this.timestamp,
+      this.message,
+      this.debugMessage,
+      this.errorMessages = const {}});
 
   Map<String, dynamic> toJson() => _$ApiErrorToJson(this);
 

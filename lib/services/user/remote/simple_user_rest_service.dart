@@ -23,7 +23,7 @@ class SimpleUserRESTService
         AuthBackedWebServiceMixin,
         JwtAuthBackedServiceMixin,
         LoginServiceAuthStorageAuthBackedWebServiceMixin
-    implements UserRESTService {
+    implements UserRESTService<RemoteAppUser> {
   final Dio dio;
   final ServerDetails serverDetails;
   final SerializationUtils serializationUtils;
@@ -54,12 +54,11 @@ class SimpleUserRESTService
 
   /// Shared/main behaviour of fetching user auth data
   Future<RemoteAppUser?> _fetchAuthUserDataInternal(Auth auth) async {
-    var authToUse = auth as JwtAuth;
-
     try {
       String url = "${getEndpoint()}/self";
       var response = await dio.get(url,
-          options: Options(headers: await generateAuthHeaders()));
+          options: Options(
+              headers: await generateAuthHeadersFromSuppliedAuth(auth)));
 
       if (response.statusCode == 403) return null;
 
@@ -103,5 +102,27 @@ class SimpleUserRESTService
   @override
   Future<LoginService<Auth, Auth>> getLoginService() async {
     return loginService;
+  }
+
+  @override
+  Future<bool> register(RemoteAppUser user) async {
+    try {
+      String url = "${getEndpoint()}/register";
+      var response = await dio.post(url, data: user.toJson());
+
+      if (response.statusCode == 403) return false;
+
+      if (response.statusCode != 200) throw response;
+
+      return true;
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.badResponse) {
+        var apiError =
+            serializationUtils.deserialize<ApiError>(e.response!.data);
+        throw apiError;
+      }
+
+      rethrow;
+    }
   }
 }
