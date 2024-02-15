@@ -74,4 +74,17 @@ class SerializationUtils {
 
     return jsonList.map((e) => e as Map<String, dynamic>).map(f).toList();
   }
+
+  static DateTime? deserializeDate(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value.toLocal();
+
+    return DateTime.parse(value).toLocal();
+  }
+
+  static String? serializeDate(DateTime? value) {
+    if (value == null) return null;
+
+    return value.toUtc().toIso8601String();
+  }
 }

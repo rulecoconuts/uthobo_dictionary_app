@@ -6,8 +6,9 @@ part 'jwt_auth.g.dart';
 @JsonSerializable()
 class JwtAuth extends Auth {
   String token;
+  String? refreshToken;
 
-  JwtAuth({required this.token});
+  JwtAuth({required this.token, this.refreshToken});
 
   @JsonKey(name: "type", includeToJson: true)
   @override

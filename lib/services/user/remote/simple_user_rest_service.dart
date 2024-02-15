@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:dictionary_app/services/auth/error_handling/invalid_auth_exception.dart';
 import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:dictionary_app/services/auth/login/jwt_auth.dart';
+import 'package:dictionary_app/services/auth/login/jwt_auth_backed_service_mixin.dart';
 import 'package:dictionary_app/services/auth/login/login_service.dart';
+import 'package:dictionary_app/services/auth/login/login_service_auth_storage_auth_backed_web_service_mixin.dart';
+import 'package:dictionary_app/services/auth/login/web_service_mixin.dart';
 import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
@@ -15,7 +18,12 @@ import 'package:dictionary_app/services/user/remote/user_rest_service.dart';
 import 'package:dio/dio.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-class SimpleUserRESTService implements UserRESTService {
+class SimpleUserRESTService
+    with
+        AuthBackedWebServiceMixin,
+        JwtAuthBackedServiceMixin,
+        LoginServiceAuthStorageAuthBackedWebServiceMixin
+    implements UserRESTService {
   final Dio dio;
   final ServerDetails serverDetails;
   final SerializationUtils serializationUtils;
@@ -51,9 +59,7 @@ class SimpleUserRESTService implements UserRESTService {
     try {
       String url = "${getEndpoint()}/self";
       var response = await dio.get(url,
-          options: Options(headers: {
-            HttpHeaders.authorizationHeader: "Bearer ${authToUse.token}"
-          }));
+          options: Options(headers: await generateAuthHeaders()));
 
       if (response.statusCode == 403) return null;
 
@@ -87,5 +93,15 @@ class SimpleUserRESTService implements UserRESTService {
     }
 
     return await _fetchAuthUserDataInternal(authToUse);
+  }
+
+  @override
+  Future<AuthStorage> getAuthStorage() async {
+    return authStorage;
+  }
+
+  @override
+  Future<LoginService<Auth, Auth>> getLoginService() async {
+    return loginService;
   }
 }

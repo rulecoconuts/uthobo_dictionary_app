@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dictionary_app/accessors/server_utils_accessor.dart';
 import 'package:dictionary_app/services/auth/login/auth.dart';
@@ -36,10 +37,41 @@ class SimpleEmailUsernamePasswordLoginService
       if (response.statusCode != 200) throw response;
 
       var bearerToken = response.headers.value("AUTHORIZATION");
-      return JwtAuth(token: bearerToken!.replaceFirst("Bearer ", ""));
+      var refreshToken = response.headers.value("Refresh-Token");
+      return JwtAuth(
+          token: bearerToken!.replaceFirst("Bearer ", ""),
+          refreshToken: refreshToken);
     } on DioException catch (e) {
       if (e.type == DioExceptionType.badResponse) {
-        if (e.response?.statusCode == 403) {
+        if (e.response?.statusCode == 403 && e.response?.data is Map) {
+          var apiError =
+              serializationUtils.deserialize<ApiError>(e.response!.data);
+          throw apiError;
+        }
+      }
+      rethrow;
+    }
+  }
+
+  Future<JwtAuth> refresh(JwtAuth jwtAuth) async {
+    try {
+      var response = await dio.post("${serverDetails.url}/users/refresh",
+          options: Options(headers: {
+            HttpHeaders.authorizationHeader: "Bearer ${jwtAuth.token}",
+            if (jwtAuth.refreshToken != null)
+              "Refresh-Token": jwtAuth.refreshToken
+          }));
+
+      if (response.statusCode != 200) throw response;
+
+      var bearerToken = response.headers.value("AUTHORIZATION");
+      var refreshToken = response.headers.value("Refresh-Token");
+      return JwtAuth(
+          token: bearerToken!.replaceFirst("Bearer ", ""),
+          refreshToken: refreshToken);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.badResponse) {
+        if (e.response?.statusCode == 403 && e.response?.data is Map) {
           var apiError =
               serializationUtils.deserialize<ApiError>(e.response!.data);
           throw apiError;
@@ -55,7 +87,10 @@ class SimpleEmailUsernamePasswordLoginService
 
     if (error == null) return auth;
 
-    // TODO: Attempt to refresh token
+    if (error == AuthValidationErrors.invalidFormat.name) return null;
+
+    // Attempt to refresh token
+    return await refresh(auth);
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'remote_app_user.g.dart';
@@ -16,8 +17,14 @@ class RemoteAppUser {
 
   String? password;
 
+  @JsonKey(
+      fromJson: SerializationUtils.deserializeDate,
+      toJson: SerializationUtils.serializeDate)
   DateTime? createdAt;
 
+  @JsonKey(
+      fromJson: SerializationUtils.deserializeDate,
+      toJson: SerializationUtils.serializeDate)
   DateTime? updatedAt;
 
   RemoteAppUser(
