@@ -3,7 +3,7 @@ import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/user/app_user_domain_object.dart';
-import 'package:dictionary_app/services/user/remote_app_user.dart';
+import 'package:dictionary_app/services/user/remote/remote_app_user.dart';
 import 'package:get_it/get_it.dart';
 
 class SerializationConfig extends IocConfig {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dictionary_app/accessors/auth_utils_accessor.dart';
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/auth/login/auth.dart';
+import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,8 +25,8 @@ class _LoginGateWidgetState extends State<LoginGateWidget>
   /// Decide which page the user should be sent to
   void routeToAppropriatePage() async {
     try {
-      Auth? auth = await loginService()
-          .validateOrRefreshAuthInStorage(await authStorage(), "token");
+      Auth? auth = await loginService().validateOrRefreshAuthInStorage(
+          await authStorage(), Constants.loginTokenKey);
 
       if (auth == null) {
         // No auth
@@ -34,7 +35,6 @@ class _LoginGateWidgetState extends State<LoginGateWidget>
       }
 
       // auth is valid
-      // Get user data and load into cache
 
       // Go to home page
       router().go("/language_selection");

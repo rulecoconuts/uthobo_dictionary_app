@@ -14,12 +14,8 @@ RemoteAppUser _$RemoteAppUserFromJson(Map<String, dynamic> json) =>
       firstName: json['firstName'] as String?,
       lastName: json['lastName'] as String?,
       password: json['password'] as String?,
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
+      createdAt: SerializationUtils.deserializeDate(json['createdAt']),
+      updatedAt: SerializationUtils.deserializeDate(json['updatedAt']),
     );
 
 Map<String, dynamic> _$RemoteAppUserToJson(RemoteAppUser instance) =>
@@ -30,6 +26,6 @@ Map<String, dynamic> _$RemoteAppUserToJson(RemoteAppUser instance) =>
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'password': instance.password,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'createdAt': SerializationUtils.serializeDate(instance.createdAt),
+      'updatedAt': SerializationUtils.serializeDate(instance.updatedAt),
     };

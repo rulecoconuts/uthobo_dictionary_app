@@ -2,10 +2,11 @@ import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/config/main_config.dart';
 import 'package:dictionary_app/services/flavor/app_flavor.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
   MainConfig(appFlavor: AppFlavor.DEV).config();
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget with RoutingUtilsAccessor {
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget with RoutingUtilsAccessor {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Flutter Demo',
+      color: Colors.white,
       theme: ThemeData(
         // This is the theme of your application.
         //
