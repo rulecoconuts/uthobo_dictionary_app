@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget with RoutingUtilsAccessor {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Flutter Demo',
+      color: Colors.white,
       theme: ThemeData(
         // This is the theme of your application.
         //
