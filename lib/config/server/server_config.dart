@@ -15,7 +15,7 @@ class ServerConfig extends IocConfig with FlavorUtilsAccessor {
     });
     GetIt.I.registerLazySingleton(() => ServerDetails(
             url: switch (appFlavor()) {
-          AppFlavor.DEV => "http://localhost:8080/api",
+          AppFlavor.DEV => "http://10.0.2.2:8080/api",
           _ => ""
         }));
   }

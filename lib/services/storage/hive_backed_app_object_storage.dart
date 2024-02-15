@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dictionary_app/services/storage/app_object_storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveBackedAppObjectStorage implements AppObjectStorage {
   final LazyBox box;
@@ -32,6 +33,7 @@ class HiveBackedAppObjectStorage implements AppObjectStorage {
 
   /// Generate an encrypted HiveBackedAppObjectStorage instance
   static Future<HiveBackedAppObjectStorage> secure(String label) async {
+    await Hive.initFlutter();
     var secureStorage = FlutterSecureStorage();
     String encryptionKeyLabel = "${label}_encryption_key";
     String? encryptionKey = await secureStorage.read(key: encryptionKeyLabel);

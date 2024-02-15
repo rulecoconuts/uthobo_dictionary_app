@@ -31,6 +31,7 @@ class SimpleAuthStorage implements AuthStorage {
 
   @override
   Future put(String key, Auth auth) async {
-    return await storage.put(key, serializationUtils.serialize<Auth>(auth));
+    return await storage.put(
+        key, json.encode(serializationUtils.serialize<Auth>(auth)));
   }
 }
