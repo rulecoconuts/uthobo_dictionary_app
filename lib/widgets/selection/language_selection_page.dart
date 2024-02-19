@@ -2,6 +2,7 @@ import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/user/app_user_domain_object.dart';
 import 'package:dictionary_app/services/user/providers/logged_in_user_holder.dart';
 import 'package:dictionary_app/services/user/remote/remote_app_user.dart';
+import 'package:dictionary_app/widgets/selection/language_selection_dropdown.dart';
 import 'package:either_option/either_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -50,19 +51,61 @@ class LanguageSelectionPage extends HookConsumerWidget
   Widget build(BuildContext context, WidgetRef ref) {
     var user = ref.watch(loggedInUserHolderProvider);
 
-    return Container(
-      color: Colors.blueGrey,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            generateUser(user, context),
-            Padding(
-              padding: EdgeInsets.only(top: 30),
-              child: generateSignoutButton(ref, context),
-            )
-          ],
-        ),
+    return Material(
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 40, bottom: 80),
+                        child: Text(
+                          "Translate",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      LanguageSelectionDropdown(
+                          onSelectionChanged: (language) {}),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 30, top: 70),
+                        child: Text(
+                          "to",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      LanguageSelectionDropdown(
+                          onSelectionChanged: (language) {}),
+                    ],
+                  )),
+                  Padding(
+                      padding: EdgeInsets.only(bottom: 40),
+                      child: TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            "Continue",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          )))
+                ])),
       ),
     );
   }
