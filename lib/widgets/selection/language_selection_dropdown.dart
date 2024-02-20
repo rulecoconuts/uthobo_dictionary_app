@@ -48,7 +48,7 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
   /// The amount of time that the widget should wait to listen for more input
   /// before applying the search
   Duration getInputWaitDuration() {
-    return const Duration(milliseconds: 500);
+    return const Duration(milliseconds: 550);
   }
 
   void onSearchTermChanged(
@@ -85,6 +85,10 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
         anchor: const Aligned(
             follower: Alignment.topCenter,
             target: Alignment.bottomCenter,
+            backup: Aligned(
+                follower: Alignment.bottomCenter,
+                target: Alignment.topCenter,
+                offset: Offset(0, 10)),
             offset: Offset(0, 10)),
         portalFollower: isResultsPanelVisible.value
             ? getSearchPanel(searchTermNotifier, selectedLanguage,
