@@ -26,4 +26,12 @@ class LanguageDomainObject implements TemporalAuditable, UserAuditable {
       this.updatedAt,
       this.createdBy,
       this.updatedBy});
+
+  @override
+  int get hashCode =>
+      id != null ? Object.hash(id, null) : Object.hash(name, null);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is LanguageDomainObject && hashCode == other.hashCode;
 }

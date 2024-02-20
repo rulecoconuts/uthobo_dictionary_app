@@ -28,6 +28,39 @@ class ApiPageDetails {
       this.sort = const ApiPageSortDetails(),
       this.sortFields = const []});
 
+  ApiPageDetails first() {
+    return ApiPageDetails(
+        pageNumber: 0,
+        pageSize: pageSize,
+        offset: offset,
+        paged: paged,
+        unpaged: unpaged,
+        sort: sort,
+        sortFields: [...sortFields]);
+  }
+
+  ApiPageDetails next() {
+    return ApiPageDetails(
+        pageNumber: pageNumber + 1,
+        pageSize: pageSize,
+        offset: offset,
+        paged: paged,
+        unpaged: unpaged,
+        sort: sort,
+        sortFields: [...sortFields]);
+  }
+
+  ApiPageDetails previous() {
+    return ApiPageDetails(
+        pageNumber: pageNumber == 0 ? 0 : pageNumber - 1,
+        pageSize: pageSize,
+        offset: offset,
+        paged: paged,
+        unpaged: unpaged,
+        sort: sort,
+        sortFields: [...sortFields]);
+  }
+
   Map<String, dynamic> toJson() => _$ApiPageDetailsToJson(this);
 
   factory ApiPageDetails.fromJson(Map<String, dynamic> json) =>

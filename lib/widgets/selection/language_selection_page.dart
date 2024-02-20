@@ -6,6 +6,7 @@ import 'package:dictionary_app/widgets/selection/language_selection_dropdown.dar
 import 'package:either_option/either_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LanguageSelectionPage extends HookConsumerWidget
@@ -55,10 +56,11 @@ class LanguageSelectionPage extends HookConsumerWidget
       child: Container(
         color: Colors.white,
         child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+            padding: EdgeInsets.symmetric(horizontal: 15).copyWith(bottom: 10),
+            child: Portal(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                   Expanded(
                       child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -92,7 +94,7 @@ class LanguageSelectionPage extends HookConsumerWidget
                     ],
                   )),
                   Padding(
-                      padding: EdgeInsets.only(bottom: 40),
+                      padding: EdgeInsets.only(bottom: 30),
                       child: TextButton(
                           onPressed: () {},
                           child: Text(
@@ -105,7 +107,7 @@ class LanguageSelectionPage extends HookConsumerWidget
                                   fontWeight: FontWeight.w600,
                                 ),
                           )))
-                ])),
+                ]))),
       ),
     );
   }

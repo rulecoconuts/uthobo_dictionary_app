@@ -6,7 +6,7 @@ import 'package:dictionary_app/services/auth/login/web_service_mixin.dart';
 import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
-import 'package:dictionary_app/services/language/remote_language.dart';
+import 'package:dictionary_app/services/language/remote/remote_language.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
@@ -63,14 +63,19 @@ class LanguageRESTService
       {ApiPageDetails pageDetails = const ApiPageDetails()}) async {
     try {
       String url = "${getEndpoint()}/nameSearch";
-      var response = await dio.get(url, queryParameters: {
-        "name": namePattern,
-        ...pageDetails.toQueryParameters()
-      });
+      var response = await dio.get(url,
+          queryParameters: {
+            "name": namePattern,
+            ...pageDetails.toQueryParameters()
+          },
+          options: Options(headers: await generateAuthHeaders()));
 
       return deserializeIntoPage(response.data);
     } on DioException catch (e) {
       handleDioException(e);
+      rethrow;
+    } catch (e) {
+      print(e);
       rethrow;
     }
   }

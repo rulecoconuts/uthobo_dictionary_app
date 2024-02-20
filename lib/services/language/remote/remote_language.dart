@@ -1,5 +1,6 @@
 import 'package:dictionary_app/services/auditable/temporal_audtiable.dart';
 import 'package:dictionary_app/services/auditable/user_auditable.dart';
+import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -42,4 +43,15 @@ class RemoteLanguage implements TemporalAuditable, UserAuditable {
 
   factory RemoteLanguage.fromJson(Map<String, dynamic> json) =>
       _$RemoteLanguageFromJson(json);
+
+  LanguageDomainObject toDomain() {
+    return LanguageDomainObject(
+        name: name,
+        id: id,
+        description: description,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        createdBy: createdBy,
+        updatedBy: updatedBy);
+  }
 }

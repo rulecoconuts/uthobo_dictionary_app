@@ -18,6 +18,15 @@ class ApiPage<T> {
       this.totalElements = 0,
       this.last = false});
 
+  ApiPage<E> map<E>(E Function(T t) toElement) {
+    return ApiPage(
+        content: content.map(toElement).toList(),
+        pageable: pageable,
+        totalPages: totalPages,
+        totalElements: totalElements,
+        last: last);
+  }
+
   Map<String, dynamic> toJson(Object? Function(T value) serializer) =>
       _$ApiPageToJson(this, serializer);
 
