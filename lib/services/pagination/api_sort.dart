@@ -13,6 +13,13 @@ class ApiSort {
     return "$name,${direction.name}";
   }
 
+  @override
+  int get hashCode => Object.hashAll([name, direction]);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is ApiSort && hashCode == other.hashCode;
+
   Map<String, dynamic> toJson() => _$ApiSortToJson(this);
 
   factory ApiSort.fromJson(json) => _$ApiSortFromJson(json);

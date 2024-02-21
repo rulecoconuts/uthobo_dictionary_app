@@ -39,6 +39,7 @@ mixin SimpleDioBackedRESTServiceMixin<T>
     try {
       var dio = getDio();
       var response = await dio.post(await getCreationUrl(model),
+          data: serialize(model),
           options: Options(headers: await generateAuthHeaders()));
 
       // parse response body into [T]

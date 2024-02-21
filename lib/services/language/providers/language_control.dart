@@ -16,9 +16,14 @@ class LanguageControl extends _$LanguageControl with LanguageUtilsAccessor {
         .searchByNamePattern(namePattern, pageDetails: pageDetails);
 
     if (results.content.isNotEmpty) {
-      ref.cacheFor(Duration(minutes: 1));
+      ref.cacheFor(Duration(seconds: 15));
     }
 
     return results;
+  }
+
+  Future create(LanguageDomainObject newLanguage) async {
+    await (await languageDomainService()).create(newLanguage);
+    ref.invalidateSelf();
   }
 }

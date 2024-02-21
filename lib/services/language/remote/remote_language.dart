@@ -54,4 +54,15 @@ class RemoteLanguage implements TemporalAuditable, UserAuditable {
         createdBy: createdBy,
         updatedBy: updatedBy);
   }
+
+  factory RemoteLanguage.fromDomain(LanguageDomainObject languageDomainObject) {
+    return RemoteLanguage(
+        name: languageDomainObject.name,
+        id: languageDomainObject.id,
+        description: languageDomainObject.description,
+        createdAt: languageDomainObject.createdAt,
+        updatedAt: languageDomainObject.updatedAt,
+        createdBy: languageDomainObject.createdBy,
+        updatedBy: languageDomainObject.updatedBy);
+  }
 }

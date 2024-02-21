@@ -4,7 +4,7 @@ import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/language/providers/language_control.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/pagination/api_sort.dart';
-import 'package:dictionary_app/widgets/selection/language_selection_result_panel.dart';
+import 'package:dictionary_app/widgets/language/language_selection_result_panel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

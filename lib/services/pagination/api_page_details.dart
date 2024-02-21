@@ -28,6 +28,14 @@ class ApiPageDetails {
       this.sort = const ApiPageSortDetails(),
       this.sortFields = const []});
 
+  @override
+  int get hashCode => Object.hashAll(
+      [pageNumber, pageSize, offset, paged, unpaged, sort, ...sortFields]);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is ApiPageDetails && hashCode == other.hashCode;
+
   ApiPageDetails first() {
     return ApiPageDetails(
         pageNumber: 0,

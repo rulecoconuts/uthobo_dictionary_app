@@ -2,6 +2,7 @@ import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/language/providers/language_control.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/pagination/api_sort.dart';
+import 'package:dictionary_app/widgets/language/language_not_found_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -69,18 +70,6 @@ class LanguageSelectionResultPanel extends HookConsumerWidget {
     var fetchedResult = ref.watch(languageControlProvider(
         processSearchTerm(namePattern), currentPageDetails.value));
 
-    if (languageList.value.isEmpty && fetchedResult.isLoading) {
-      return Center(
-        child: SizedBox(
-            height: 100,
-            width: 100,
-            child: LoadingIndicator(
-              indicatorType: Indicator.ballClipRotateMultiple,
-              colors: [Theme.of(context).colorScheme.primary],
-            )),
-      );
-    }
-
     // Listen to changes in visible items
     useEffect(() {
       Function() onVisibleLanguagesChanged = () => fetchNewPageIfCloseToEnd(
@@ -106,7 +95,25 @@ class LanguageSelectionResultPanel extends HookConsumerWidget {
       }
     }
 
-    if (languageList.value.isEmpty) return Container();
+    if (languageList.value.isEmpty && fetchedResult.isLoading) {
+      return Center(
+        child: SizedBox(
+            height: 100,
+            width: 100,
+            child: LoadingIndicator(
+              indicatorType: Indicator.ballClipRotateMultiple,
+              colors: [Theme.of(context).colorScheme.primary],
+            )),
+      );
+    }
+
+    if (languageList.value.isEmpty) {
+      hasProcessedLastResult.value = false;
+      return LanguageNotFoundPage(
+        previousSearchString: processSearchTerm(namePattern),
+        previousPageDetails: currentPageDetails.value,
+      );
+    }
 
     return ScrollablePositionedList.separated(
       itemBuilder: (ctx, index) {

@@ -2,7 +2,7 @@ import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/user/app_user_domain_object.dart';
 import 'package:dictionary_app/services/user/providers/logged_in_user_holder.dart';
 import 'package:dictionary_app/services/user/remote/remote_app_user.dart';
-import 'package:dictionary_app/widgets/selection/language_selection_dropdown.dart';
+import 'package:dictionary_app/widgets/language/language_selection_dropdown.dart';
 import 'package:either_option/either_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
