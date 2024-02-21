@@ -18,6 +18,10 @@ class ApiError {
       this.debugMessage,
       this.errorMessages = const {}});
 
+  String generateCompiledErrorMessages() {
+    return errorMessages.keys.map((k) => errorMessages[k]!).join("\n");
+  }
+
   Map<String, dynamic> toJson() => _$ApiErrorToJson(this);
 
   factory ApiError.fromJson(Map<String, dynamic> json) =>

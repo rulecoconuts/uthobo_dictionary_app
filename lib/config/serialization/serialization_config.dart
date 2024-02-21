@@ -1,5 +1,6 @@
 import 'package:dictionary_app/config/ioc_config.dart';
 import 'package:dictionary_app/services/auth/login/auth.dart';
+import 'package:dictionary_app/services/language/remote/remote_language.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/user/app_user_domain_object.dart';
@@ -13,6 +14,7 @@ class SerializationConfig extends IocConfig {
       ..addDeserializer<Auth>(Auth.fromJson)
       ..addDeserializer<ApiError>(ApiError.fromJson)
       ..addDeserializer<RemoteAppUser>(RemoteAppUser.fromJson)
-      ..addDeserializer<AppUserDomainObject>(AppUserDomainObject.fromJson));
+      ..addDeserializer<AppUserDomainObject>(AppUserDomainObject.fromJson)
+      ..addDeserializer(RemoteLanguage.fromJson));
   }
 }
