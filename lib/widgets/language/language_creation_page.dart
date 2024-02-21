@@ -35,8 +35,7 @@ class LanguageCreationPage extends HookConsumerWidget
                   previousPageDetails ?? ApiPageDetails())
               .notifier)
           .create(newLanguage);
-      ref.read(languageControlProvider(previousSearchString ?? newLanguage.name,
-          previousPageDetails ?? ApiPageDetails()));
+
       router().pop();
     } on ApiError catch (e, stackTrace) {
       String message = e.generateCompiledErrorMessages();
