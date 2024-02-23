@@ -6,7 +6,7 @@ part of 'language_control.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$languageControlHash() => r'8e8d12648afe0224f538007a878ac67cbc367812';
+String _$languageControlHash() => r'682fd17d86e9d64fe8e8d48c3862e87adb1a78c7';
 
 /// Copied from Dart SDK
 class _SystemHash {

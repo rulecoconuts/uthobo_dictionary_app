@@ -1,4 +1,7 @@
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
+import 'package:dictionary_app/services/language/language_domain_object.dart';
+import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
+import 'package:dictionary_app/services/language/translation_context_domain_object.dart';
 import 'package:dictionary_app/services/user/app_user_domain_object.dart';
 import 'package:dictionary_app/services/user/providers/logged_in_user_holder.dart';
 import 'package:dictionary_app/services/user/remote/remote_app_user.dart';
@@ -48,8 +51,41 @@ class LanguageSelectionPage extends HookConsumerWidget
         ));
   }
 
+  /// Set translation context and go to word list
+  void setTranslationContext(
+    WidgetRef ref,
+    ValueNotifier<LanguageDomainObject?> sourceLanguage,
+    ValueNotifier<String> sourceError,
+    ValueNotifier<LanguageDomainObject?> targetLanguage,
+    ValueNotifier<String> targetError,
+  ) async {
+    bool isValid = true;
+    if (sourceLanguage.value == null) {
+      sourceError.value = "Source language is required";
+      isValid = false;
+    }
+
+    if (targetLanguage.value == null) {
+      targetError.value = "Target language is required";
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    await ref.read(translationContextControlProvider.notifier).set(
+        TranslationContextDomainObject(
+            source: sourceLanguage.value!, target: targetLanguage.value!));
+
+    router().go("/word_list");
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var sourceLanguage = useState<LanguageDomainObject?>(null);
+    var targetLanguage = useState<LanguageDomainObject?>(null);
+    var sourceError = useState("");
+    var targetError = useState("");
+
     var user = ref.watch(loggedInUserHolderProvider);
 
     return Material(
@@ -76,8 +112,22 @@ class LanguageSelectionPage extends HookConsumerWidget
                               ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                       ),
-                      LanguageSelectionDropdown(
-                          onSelectionChanged: (language) {}),
+                      LanguageSelectionDropdown(onSelectionChanged: (language) {
+                        sourceLanguage.value = language;
+                        sourceError.value = "";
+                      }),
+                      if (sourceError.value.isNotEmpty)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 7),
+                          child: Text(
+                            sourceError.value,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Colors.red),
+                          ),
+                        ),
                       Padding(
                         padding: EdgeInsets.only(bottom: 30, top: 70),
                         child: Text(
@@ -89,14 +139,33 @@ class LanguageSelectionPage extends HookConsumerWidget
                               ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                       ),
-                      LanguageSelectionDropdown(
-                          onSelectionChanged: (language) {}),
+                      LanguageSelectionDropdown(onSelectionChanged: (language) {
+                        targetLanguage.value = language;
+                        targetError.value = "";
+                      }),
+                      if (targetError.value.isNotEmpty)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 7),
+                          child: Text(
+                            targetError.value,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Colors.red),
+                          ),
+                        ),
                     ],
                   )),
                   Padding(
                       padding: EdgeInsets.only(bottom: 30),
                       child: TextButton(
-                          onPressed: () {},
+                          onPressed: () => setTranslationContext(
+                              ref,
+                              sourceLanguage,
+                              sourceError,
+                              targetLanguage,
+                              targetError),
                           child: Text(
                             "Continue",
                             style: Theme.of(context)

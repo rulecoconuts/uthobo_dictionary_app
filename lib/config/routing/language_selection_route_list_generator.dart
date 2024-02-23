@@ -1,6 +1,7 @@
 import 'package:dictionary_app/config/routing/route_list_generator.dart';
 import 'package:dictionary_app/widgets/language/language_creation_page.dart';
 import 'package:dictionary_app/widgets/language/language_selection_page.dart';
+import 'package:dictionary_app/widgets/language/word_list_page.dart';
 import 'package:go_router/src/route.dart';
 
 class LanguageSelectionRouteListGenerator extends RouteListGenerator {
@@ -20,6 +21,12 @@ class LanguageSelectionRouteListGenerator extends RouteListGenerator {
               previousPageDetails: args["previous_page_details"],
             );
           }),
+      GoRoute(
+        path: "/word_list",
+        builder: (context, state) {
+          return WordListPage();
+        },
+      )
     ];
   }
 }

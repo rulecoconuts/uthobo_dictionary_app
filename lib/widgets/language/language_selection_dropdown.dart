@@ -43,6 +43,7 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
     selectedLanguage.value = language;
     textEditController.value.text = language.name;
     isResultsPanelVisible.value = false;
+    onSelectionChanged.call(language);
   }
 
   /// The amount of time that the widget should wait to listen for more input

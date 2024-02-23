@@ -55,7 +55,9 @@ class MyApp extends StatelessWidget with RoutingUtilsAccessor {
           bodyMedium: TextStyle(color: Colors.black, fontSize: 15),
         ),
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(0xFF203354), primary: Color(0xFF203354)),
+            seedColor: Color(0xFF203354),
+            primary: Color(0xFF203354),
+            secondary: Color(0xFF5C6B85)),
         useMaterial3: true,
       ),
       routerDelegate: router().routerDelegate,
