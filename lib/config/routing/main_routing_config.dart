@@ -3,6 +3,7 @@ import 'package:dictionary_app/config/routing/auth_route_list_generator.dart';
 import 'package:dictionary_app/config/routing/init_route_list_generator.dart';
 import 'package:dictionary_app/config/routing/language_selection_route_list_generator.dart';
 import 'package:dictionary_app/config/routing/route_list_generator.dart';
+import 'package:dictionary_app/config/routing/word_route_list_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -13,7 +14,8 @@ class MainRoutingConfig extends IocConfig {
     return [
       InitRouteListGenerator(),
       AuthRouteListGenerator(),
-      LanguageSelectionRouteListGenerator()
+      LanguageSelectionRouteListGenerator(),
+      WordRouteListGenerator()
     ];
   }
 

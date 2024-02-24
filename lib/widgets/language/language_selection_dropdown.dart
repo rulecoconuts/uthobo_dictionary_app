@@ -13,7 +13,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LanguageSelectionDropdown extends HookConsumerWidget {
   final Function(LanguageDomainObject language) onSelectionChanged;
-  const LanguageSelectionDropdown({required this.onSelectionChanged, Key? key})
+  final InputBorder border;
+  final LanguageDomainObject? initialLanguage;
+  const LanguageSelectionDropdown(
+      {required this.onSelectionChanged,
+      this.initialLanguage,
+      this.border = const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 1)),
+      Key? key})
       : super(key: key);
 
   Widget getSearchPanel(
@@ -78,7 +85,11 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
     var isResultsPanelVisible = useState(false);
     var inputWaitTimer = useState<Timer?>(null);
     var textEditController = useState(TextEditingController());
-    var selectedLanguage = useState<LanguageDomainObject?>(null);
+    var selectedLanguage = useState<LanguageDomainObject?>(initialLanguage);
+
+    useEffect(() {
+      textEditController.value.text = initialLanguage?.name ?? "";
+    }, [initialLanguage]);
 
     var searchTermNotifier = useState("");
     return PortalTarget(
@@ -99,10 +110,8 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
           controller: textEditController.value,
           onChanged: (value) => onSearchTermChanged(value, searchTermNotifier,
               inputWaitTimer, isResultsPanelVisible, ref),
-          decoration: const InputDecoration(
-              border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1)),
-              hintText: "Start typing a language"),
+          decoration: InputDecoration(
+              border: border, hintText: "Start typing a language"),
         ));
   }
 }

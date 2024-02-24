@@ -7,11 +7,11 @@ part of 'translation_context_control.dart';
 // **************************************************************************
 
 String _$translationContextControlHash() =>
-    r'03a744955cc762c7f6594c0c7388c5f8e8bc8aab';
+    r'67681375298d670a75e8fdc7d59fb4a631c52d4c';
 
 /// See also [TranslationContextControl].
 @ProviderFor(TranslationContextControl)
-final translationContextControlProvider = AutoDisposeAsyncNotifierProvider<
+final translationContextControlProvider = AsyncNotifierProvider<
     TranslationContextControl, TranslationContextDomainObject?>.internal(
   TranslationContextControl.new,
   name: r'translationContextControlProvider',
@@ -23,6 +23,6 @@ final translationContextControlProvider = AutoDisposeAsyncNotifierProvider<
 );
 
 typedef _$TranslationContextControl
-    = AutoDisposeAsyncNotifier<TranslationContextDomainObject?>;
+    = AsyncNotifier<TranslationContextDomainObject?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

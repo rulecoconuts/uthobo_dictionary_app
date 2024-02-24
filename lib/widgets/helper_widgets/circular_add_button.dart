@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class RoundedAddButton extends StatelessWidget {
+class CircularAddButton extends StatelessWidget {
   final void Function()? onTap;
   final double size;
-  const RoundedAddButton({this.onTap, this.size = 100, super.key});
+  const CircularAddButton({this.onTap, this.size = 100, super.key});
 
   @override
   Widget build(BuildContext context) {

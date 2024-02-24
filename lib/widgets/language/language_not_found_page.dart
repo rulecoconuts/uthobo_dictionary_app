@@ -1,6 +1,6 @@
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
-import 'package:dictionary_app/widgets/helper_widgets/rounded_add_button.dart';
+import 'package:dictionary_app/widgets/helper_widgets/circular_add_button.dart';
 import 'package:flutter/material.dart';
 
 class LanguageNotFoundPage extends StatelessWidget with RoutingUtilsAccessor {
@@ -25,7 +25,7 @@ class LanguageNotFoundPage extends StatelessWidget with RoutingUtilsAccessor {
           )),
           Padding(
             padding: EdgeInsets.only(top: 50),
-            child: RoundedAddButton(
+            child: CircularAddButton(
               onTap: () => router().push("/language_create", extra: {
                 if (previousSearchString != null)
                   "previous_search_string": previousSearchString,
