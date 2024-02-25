@@ -7,43 +7,42 @@ import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
-import 'package:dictionary_app/services/language/remote/remote_language.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
+import 'package:dictionary_app/services/part_of_speech/part_of_speech_REST_service.dart';
+import 'package:dictionary_app/services/part_of_speech/remote/remote_part_of_speech.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:dictionary_app/services/server/server_details.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/src/dio.dart';
 
-class LanguageRESTService
+class SimplePartOfSpeechRESTService
     with
         AuthBackedWebServiceMixin,
         JwtAuthBackedServiceMixin,
         LoginServiceAuthStorageAuthBackedWebServiceMixin,
-        CreationService<RemoteLanguage>,
-        UpdateService<RemoteLanguage>,
-        DeletionService<RemoteLanguage>,
-        SimpleDioBackedRESTServiceMixin<RemoteLanguage> {
+        CreationService<RemotePartOfSpeech>,
+        UpdateService<RemotePartOfSpeech>,
+        DeletionService<RemotePartOfSpeech>,
+        SimpleDioBackedRESTServiceMixin<RemotePartOfSpeech>
+    implements PartOfSpeechRESTService {
   final AuthStorage authStorage;
-  final LoginService loginService;
   final Dio dio;
-  final ServerDetails serverDetails;
+  final LoginService loginService;
   final SerializationUtils serializationUtils;
+  final ServerDetails serverDetails;
 
-  LanguageRESTService(
+  SimplePartOfSpeechRESTService(
       {required this.authStorage,
-      required this.loginService,
       required this.dio,
-      required this.serverDetails,
-      required this.serializationUtils});
+      required this.loginService,
+      required this.serializationUtils,
+      required this.serverDetails});
+
   @override
   Future<AuthStorage> getAuthStorage() async {
     return authStorage;
-  }
-
-  @override
-  Future<LoginService<Auth, Auth>> getLoginService() async {
-    return loginService;
   }
 
   @override
@@ -53,7 +52,12 @@ class LanguageRESTService
 
   @override
   String getEndpoint() {
-    return "${serverDetails.url}/languages";
+    return "${serverDetails.url}/parts_of_speech";
+  }
+
+  @override
+  Future<LoginService<Auth, Auth>> getLoginService() async {
+    return loginService;
   }
 
   @override
@@ -61,23 +65,18 @@ class LanguageRESTService
     return serializationUtils;
   }
 
-  Future<ApiPage<RemoteLanguage>> searchByNamePattern(String namePattern,
+  @override
+  Future<ApiPage<RemotePartOfSpeech>> searchByNamePattern(String namePattern,
       {ApiPageDetails pageDetails = const ApiPageDetails()}) async {
     try {
       String url = "${getEndpoint()}/nameSearch";
-      var response = await dio.get(url,
-          queryParameters: {
-            "name": namePattern,
-            ...pageDetails.toQueryParameters()
-          },
+      var response = await getDio().get(url,
+          queryParameters: {"name": namePattern},
           options: Options(headers: await generateAuthHeaders()));
 
       return deserializeIntoPage(response.data);
     } on DioException catch (e) {
       handleDioException(e);
-      rethrow;
-    } catch (e) {
-      print(e);
       rethrow;
     }
   }

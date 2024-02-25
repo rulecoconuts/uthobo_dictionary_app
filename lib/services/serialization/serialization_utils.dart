@@ -1,3 +1,5 @@
+import 'package:dictionary_app/services/pagination/api_page.dart';
+
 class SerializationUtils {
   final Map<Type, Function(Map<String, dynamic> jsonMap)> _deserializers = {};
   final Map<Type, Map<String, dynamic> Function(dynamic entity)> _serializers =
@@ -73,6 +75,11 @@ class SerializationUtils {
     var f = fromJson ?? getDeserializer<T>();
 
     return jsonList.map((e) => e as Map<String, dynamic>).map(f).toList();
+  }
+
+  ApiPage<T> deserializeIntoPage<T>(Map<String, dynamic> map) {
+    return ApiPage.fromJson(
+        map, (k) => deserialize<T>(k as Map<String, dynamic>));
   }
 
   static DateTime? deserializeDate(dynamic value) {

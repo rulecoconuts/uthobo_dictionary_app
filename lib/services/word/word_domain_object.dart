@@ -3,6 +3,9 @@ import 'package:dictionary_app/services/auditable/user_auditable.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+part 'word_domain_object.g.dart';
+
+@JsonSerializable()
 class WordDomainObject implements TemporalAuditable, UserAuditable {
   int? id;
   String name;
@@ -31,4 +34,9 @@ class WordDomainObject implements TemporalAuditable, UserAuditable {
     required this.name,
     required this.languageId,
   });
+
+  Map<String, dynamic> toJson() => _$WordDomainObjectToJson(this);
+
+  factory WordDomainObject.fromJson(Map<String, dynamic> json) =>
+      _$WordDomainObjectFromJson(json);
 }

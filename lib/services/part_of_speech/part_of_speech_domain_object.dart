@@ -37,4 +37,9 @@ class PartOfSpeechDomainObject implements TemporalAuditable, UserAuditable {
       this.updatedAt,
       this.createdBy,
       this.updatedBy});
+
+  Map<String, dynamic> toJson() => _$PartOfSpeechDomainObjectToJson(this);
+
+  factory PartOfSpeechDomainObject.fromJson(Map<String, dynamic> json) =>
+      _$PartOfSpeechDomainObjectFromJson(json);
 }
