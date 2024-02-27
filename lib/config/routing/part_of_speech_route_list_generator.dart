@@ -9,7 +9,16 @@ class PartOfSpeechRouteListGenerator implements RouteListGenerator {
     return [
       GoRoute(
         path: "/part_of_speech_creation",
-        builder: (context, state) => PartOfSpeechCreationPage(),
+        builder: (context, state) {
+          Map<String, dynamic> args = state.extra as Map<String, dynamic>;
+
+          return PartOfSpeechCreationPage(
+            onSubmit: args["on_submit"],
+            onCancel: args["on_cancel"],
+            previousSearchString: args["previous_search_string"],
+            previousPageDetails: args["previous_page_details"],
+          );
+        },
       ),
       GoRoute(
         path: "/part_of_speech_selection",
@@ -17,7 +26,7 @@ class PartOfSpeechRouteListGenerator implements RouteListGenerator {
           Map<String, dynamic> args = state.extra as Map<String, dynamic>;
 
           return PartOfSpeechSelectionPage(
-            onSelectionChanged: args["on_selection_changed"],
+            onSelectionSubmitted: args["on_selection_submitted"],
             onCancel: args["on_cancel"],
           );
         },

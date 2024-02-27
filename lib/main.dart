@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget with RoutingUtilsAccessor {
         // tested with just a hot reload.
         fontFamily: 'Poppins',
         floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: Color(0xFF203354),
             shape: CircleBorder(),
             largeSizeConstraints: BoxConstraints.tight(Size(80, 80))),
         inputDecorationTheme: InputDecorationTheme(

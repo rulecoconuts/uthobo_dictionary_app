@@ -71,7 +71,10 @@ class SimplePartOfSpeechRESTService
     try {
       String url = "${getEndpoint()}/nameSearch";
       var response = await getDio().get(url,
-          queryParameters: {"name": namePattern},
+          queryParameters: {
+            "name": namePattern,
+            ...pageDetails.toQueryParameters()
+          },
           options: Options(headers: await generateAuthHeaders()));
 
       return deserializeIntoPage(response.data);

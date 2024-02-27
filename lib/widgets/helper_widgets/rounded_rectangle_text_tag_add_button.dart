@@ -20,6 +20,7 @@ class RoundedRectangleTextTagAddButton extends HookWidget {
   Widget build(BuildContext context) {
     double size = 25;
     return InkWell(
+      onTap: onClicked,
       child: RoundedRectangleTag(
         filled: filled,
         padding: padding,

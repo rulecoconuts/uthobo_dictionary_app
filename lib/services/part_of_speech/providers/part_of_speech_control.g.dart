@@ -7,7 +7,7 @@ part of 'part_of_speech_control.dart';
 // **************************************************************************
 
 String _$partOfSpeechControlHash() =>
-    r'796a44cda09f24319e0516f1129561588659d6a9';
+    r'29abaf77155b646a627c47cbb3e5c31721aefbce';
 
 /// Copied from Dart SDK
 class _SystemHash {

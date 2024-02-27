@@ -15,4 +15,13 @@ class PartOfSpeechControl extends _$PartOfSpeechControl
     return await (await partOfSpeechDomainService())
         .searchByNamePattern(namePattern, pageDetails: pageDetails);
   }
+
+  Future<PartOfSpeechDomainObject> addNew(
+      PartOfSpeechDomainObject newPart) async {
+    var result = await (await partOfSpeechDomainService()).create(newPart);
+
+    ref.invalidateSelf();
+
+    return result;
+  }
 }

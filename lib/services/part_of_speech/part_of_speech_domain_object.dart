@@ -42,4 +42,12 @@ class PartOfSpeechDomainObject implements TemporalAuditable, UserAuditable {
 
   factory PartOfSpeechDomainObject.fromJson(Map<String, dynamic> json) =>
       _$PartOfSpeechDomainObjectFromJson(json);
+
+  @override
+  int get hashCode =>
+      id != null ? Object.hash(id, null) : Object.hash(name, null);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is PartOfSpeechDomainObject && hashCode == other.hashCode;
 }

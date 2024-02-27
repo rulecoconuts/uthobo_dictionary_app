@@ -23,7 +23,6 @@ class WordListPage extends HookConsumerWidget with RoutingUtilsAccessor {
         child: Portal(
       child: Scaffold(
           floatingActionButton: FloatingActionButton.large(
-              backgroundColor: Theme.of(context).colorScheme.primary,
               child: Icon(
                 Icons.add,
                 color: Colors.white,

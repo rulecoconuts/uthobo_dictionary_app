@@ -5,6 +5,7 @@ import 'package:dictionary_app/services/language/translation_context_domain_obje
 import 'package:dictionary_app/services/user/app_user_domain_object.dart';
 import 'package:dictionary_app/services/user/providers/logged_in_user_holder.dart';
 import 'package:dictionary_app/services/user/remote/remote_app_user.dart';
+import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_button.dart';
 import 'package:dictionary_app/widgets/language/language_selection_dropdown.dart';
 import 'package:either_option/either_option.dart';
 import 'package:flutter/material.dart';
@@ -159,23 +160,15 @@ class LanguageSelectionPage extends HookConsumerWidget
                   )),
                   Padding(
                       padding: EdgeInsets.only(bottom: 30),
-                      child: TextButton(
-                          onPressed: () => setTranslationContext(
-                              ref,
-                              sourceLanguage,
-                              sourceError,
-                              targetLanguage,
-                              targetError),
-                          child: Text(
-                            "Continue",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          )))
+                      child: RoundedRectangleTextButton(
+                        onPressed: () => setTranslationContext(
+                            ref,
+                            sourceLanguage,
+                            sourceError,
+                            targetLanguage,
+                            targetError),
+                        text: "Continue",
+                      ))
                 ]))),
       ),
     );

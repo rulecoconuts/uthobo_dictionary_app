@@ -5,20 +5,26 @@ import 'package:dictionary_app/services/pagination/api_sort.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/part_of_speech/providers/part_of_speech_control.dart';
 import 'package:dictionary_app/services/part_of_speech/providers/part_of_speech_creation_context.dart';
+import 'package:dictionary_app/services/toast/toast_shower.dart';
+import 'package:dictionary_app/widgets/helper_widgets/go_back_panel.dart';
 import 'package:dictionary_app/widgets/helper_widgets/not_found_widget.dart';
+import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_card.dart';
+import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_button.dart';
+import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_card.dart';
 import 'package:dictionary_app/widgets/helper_widgets/shared_main_loading_widget.dart';
 import 'package:dictionary_app/widgets/search/search_box_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class PartOfSpeechSelectionPage extends HookConsumerWidget
     with RoutingUtilsAccessor {
-  final Function(PartOfSpeechDomainObject part) onSelectionChanged;
+  final Function(PartOfSpeechDomainObject part) onSelectionSubmitted;
   final Function() onCancel;
   const PartOfSpeechSelectionPage(
-      {required this.onSelectionChanged, required this.onCancel, Key? key})
+      {required this.onSelectionSubmitted, required this.onCancel, Key? key})
       : super(key: key);
 
   String processSearchString(String name) {
@@ -55,14 +61,50 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     return const ApiPageDetails(sortFields: [ApiSort(name: "name")]);
   }
 
-  void goToPartOfSpeechCreationPage(
+  bool isPartAMatch(PartOfSpeechDomainObject part, String searchString) {
+    String cleanedSearchString = searchString.replaceAll("%", "");
+
+    return part.name.toLowerCase().contains(cleanedSearchString.toLowerCase());
+  }
+
+  /// Select new part and display it on the screen
+  void addNewlyCreatedPartToList(
+      PartOfSpeechDomainObject newPart,
+      ValueNotifier<PartOfSpeechDomainObject?> selectedPart,
+      ValueNotifier<PartOfSpeechDomainObject?> newPartNotifier,
       ValueNotifier<String> searchString,
-      ValueNotifier<ApiPageDetails> currentPageDetails,
-      String creationContextSignature) {
+      ValueNotifier<Map<int, ApiPage<PartOfSpeechDomainObject>>> pages,
+      ValueNotifier<ApiPageDetails> currentPageDetails) {
+    // Set new part as selected part
+    selectedPart.value = newPart;
+    String searchStringValue = searchString.value;
+
+    if (isPartAMatch(newPart, searchStringValue)) {
+      // If new part matches search string, wait for page to load, and try to scroll to it
+      newPartNotifier.value = newPart;
+    } else {
+      // If new part does not match search string, perform new search with new part
+      // name
+      searchString.value = newPart.name;
+      reset(pages, currentPageDetails);
+    }
+    Fluttertoast.showToast(msg: "Created part of speech");
+  }
+
+  void goToPartOfSpeechCreationPage(
+    ValueNotifier<String> searchString,
+    ValueNotifier<ApiPageDetails> currentPageDetails,
+    ValueNotifier<PartOfSpeechDomainObject?> selectedPart,
+    ValueNotifier<PartOfSpeechDomainObject?> newPartNotifier,
+    ValueNotifier<Map<int, ApiPage<PartOfSpeechDomainObject>>> pages,
+  ) {
     router().push("/part_of_speech_creation", extra: <String, dynamic>{
-      "search_string": searchString.value,
-      "page_details": currentPageDetails.value,
-      "creation_context_signature": creationContextSignature
+      "previous_search_string": processSearchString(searchString.value),
+      "previous_page_details": currentPageDetails.value,
+      "on_submit": (PartOfSpeechDomainObject newPart) =>
+          addNewlyCreatedPartToList(newPart, selectedPart, newPartNotifier,
+              searchString, pages, currentPageDetails),
+      "on_cancel": () {}
     });
   }
 
@@ -83,18 +125,15 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
 
   /// Select a part that was created in another page
   ProviderSubscription? selectNewlyCreatedPartIfItExists(
-      PartOfSpeechDomainObject? newPart,
-      ValueNotifier<PartOfSpeechDomainObject?> selectedPart,
+      ValueNotifier<PartOfSpeechDomainObject?> newPartNotifier,
       List<PartOfSpeechDomainObject> partList,
       ItemScrollController itemScrollController,
       AsyncValue<ApiPage<PartOfSpeechDomainObject>> lastFetchedPage,
       WidgetRef ref,
       ValueNotifier<String> searchString,
       ValueNotifier<ApiPageDetails> currentPageDetails) {
+    PartOfSpeechDomainObject? newPart = newPartNotifier.value;
     if (newPart == null) return null;
-    // When a new part has been created;
-    // Set new part as selected part
-    selectedPart.value = newPart;
 
     int index = partList.indexOf(newPart);
 
@@ -140,6 +179,17 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     return nextDataSubscription;
   }
 
+  /// Submit selection
+  void save(ValueNotifier<PartOfSpeechDomainObject?> selectedPart) {
+    if (selectedPart.value == null) {
+      ToastShower().showToast("No part of speech selected");
+      onCancel.call();
+      return;
+    }
+
+    onSelectionSubmitted.call(selectedPart.value!);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var searchString = useState("");
@@ -151,10 +201,7 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
         pageDetails: currentPageDetails.value));
 
     var selectedPart = useState<PartOfSpeechDomainObject?>(null);
-
-    var creationContextSignature = useState(ref
-        .read(partOfSpeechCreationContextProvider("").notifier)
-        .generateSignature());
+    var newPart = useState<PartOfSpeechDomainObject?>(null);
 
     ItemScrollController itemScrollController = ItemScrollController();
     ItemPositionsListener itemPositionsListener =
@@ -181,15 +228,10 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
 
     var partList = getPartList(pages);
 
-    // Watch for newly created part on another page
-    var newPart = ref.watch(
-        partOfSpeechCreationContextProvider(creationContextSignature.value));
-
     useEffect(() {
       // Select newly created part and scroll to it if necessary
       var newPageSubscription = selectNewlyCreatedPartIfItExists(
           newPart,
-          selectedPart,
           partList,
           itemScrollController,
           lastFetchedPage,
@@ -198,57 +240,85 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
           currentPageDetails);
 
       return newPageSubscription?.close;
-    }, [newPart]);
+    }, [newPart.value]);
 
     return Material(
       child: Scaffold(
-        floatingActionButton: FloatingActionButton.large(
-            onPressed: () => goToPartOfSpeechCreationPage(searchString,
-                currentPageDetails, creationContextSignature.value)),
-        body: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10).copyWith(top: 60),
-              child: Text(
-                "Select Part of Speech",
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineLarge
-                    ?.copyWith(fontWeight: FontWeight.w700),
+          floatingActionButton: FloatingActionButton.large(
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: SearchBoxWidget(
-                  onSearchRequested: (searchVal) =>
-                      searchString.value = searchVal),
-            ),
-            if (lastFetchedPage.isLoading && pages.value.isEmpty)
-              const Expanded(
-                  child: Center(
-                child: SharedMainLoadingWidget(),
-              ))
-            else if (lastFetchedPage.hasValue && pages.value.isEmpty)
-              const NotFoundWidget(
-                  error:
-                      "Could not find the part of speech you were looking for?  Create it!")
-            else
+              onPressed: () => goToPartOfSpeechCreationPage(searchString,
+                  currentPageDetails, selectedPart, newPart, pages)),
+          body: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 30),
+                child: GoBackPanel(
+                  after: onCancel,
+                ),
+              ),
               Expanded(
-                  child: ScrollablePositionedList.separated(
-                      scrollOffsetController: scrollOffsetController,
-                      scrollOffsetListener: scrollOffsetListener,
-                      itemScrollController: itemScrollController,
-                      itemPositionsListener: itemPositionsListener,
-                      itemCount: partList.length,
-                      itemBuilder: (ctx, index) {
-                        var part = partList[index];
-                        return Text("${part.name}");
-                      },
-                      separatorBuilder: (ctx, index) =>
-                          const Padding(padding: EdgeInsets.only(top: 30))))
-          ],
-        ),
-      ),
+                  child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 60),
+                      child: Text(
+                        "Select Part of Speech",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10)
+                          .copyWith(bottom: 30),
+                      child: SearchBoxWidget(
+                          onSearchRequested: (searchVal) =>
+                              searchString.value = searchVal),
+                    ),
+                    if (lastFetchedPage.isLoading && partList.isEmpty)
+                      const Expanded(
+                          child: Center(
+                        child: SharedMainLoadingWidget(),
+                      ))
+                    else if (lastFetchedPage.hasValue && partList.isEmpty)
+                      const Expanded(
+                          child: NotFoundWidget(
+                              error:
+                                  "Could not find the part of speech you were looking for?  Create it!"))
+                    else
+                      Expanded(
+                          child: ScrollablePositionedList.separated(
+                              scrollOffsetController: scrollOffsetController,
+                              scrollOffsetListener: scrollOffsetListener,
+                              itemScrollController: itemScrollController,
+                              itemPositionsListener: itemPositionsListener,
+                              itemCount: partList.length,
+                              itemBuilder: (ctx, index) {
+                                var part = partList[index];
+                                return InkWell(
+                                    onTap: () => selectedPart.value = part,
+                                    child: RoundedRectangleTextCard(
+                                        filled: part == selectedPart.value,
+                                        text: part.name));
+                              },
+                              separatorBuilder: (ctx, index) => const Padding(
+                                  padding: EdgeInsets.only(top: 30)))),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 40, top: 10),
+                        child: RoundedRectangleTextButton(
+                            text: "Save", onPressed: () => save(selectedPart)))
+                  ],
+                ),
+              ))
+            ],
+          )),
     );
   }
 }
