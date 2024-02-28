@@ -47,7 +47,6 @@ class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var translationContext = ref.watch(translationContextControlProvider);
-    var formValues = useState(<String, String>{});
     var creationRequest = useState(WordCreationRequest(
         translationContext: translationContext.value!, parts: []));
 
@@ -73,7 +72,7 @@ class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
                   "Create word in ${translationContext.value?.source.name}",
                   style: Theme.of(context)
                       .textTheme
-                      .headlineLarge
+                      .headlineMedium
                       ?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -84,8 +83,7 @@ class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
                   validator:
                       ValidationBuilder(requiredMessage: "Name is required")
                           .build(),
-                  onChanged:
-                      FormHelper.generateFormValueEditor("name", formValues),
+                  onChanged: (name) => creationRequest.value.name = name,
                   style: Theme.of(context)
                       .textTheme
                       .headlineLarge
@@ -116,6 +114,7 @@ class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: creationRequest.value.parts
                                   .map((e) => WordCreationPartWidget(
+                                      creationRequest: creationRequest.value,
                                       initialWordPartSpecification: e))
                                   .cast<Widget>()
                                   .separator(() => Padding(
@@ -131,18 +130,19 @@ class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
                               },
                             ),
                           ),
-                          Row(children: [
-                            Expanded(
-                              child: Padding(
-                                  padding: EdgeInsets.only(top: 20, bottom: 40),
-                                  child: RoundedRectangleTextButton(
-                                    text: "Create",
-                                    onPressed: () {},
-                                  )),
-                            )
-                          ])
                         ],
-                      )))
+                      ))),
+              Row(children: [
+                Expanded(
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10)
+                          .copyWith(top: 20, bottom: 40),
+                      child: RoundedRectangleTextButton(
+                        text: "Create",
+                        onPressed: () {},
+                      )),
+                )
+              ])
             ],
           ),
         )

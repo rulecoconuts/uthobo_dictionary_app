@@ -1,4 +1,5 @@
 import 'package:dictionary_app/config/routing/route_list_generator.dart';
+import 'package:dictionary_app/widgets/pronunciation/pronunciation_creation_page.dart';
 import 'package:dictionary_app/widgets/word/word_creation_page.dart';
 import 'package:dictionary_app/widgets/word/word_list_page.dart';
 import 'package:go_router/src/route.dart';
@@ -22,7 +23,7 @@ class WordRouteListGenerator extends RouteListGenerator {
             return WordCreationPage(
               searchString: args["search"],
             );
-          })
+          }),
     ];
   }
 }

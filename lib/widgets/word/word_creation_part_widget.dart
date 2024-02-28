@@ -1,4 +1,6 @@
+import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
+import 'package:dictionary_app/services/pronunciation/pronunciation_creation_request.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_word_part_specification.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag.dart';
@@ -8,11 +10,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class WordCreationPartWidget extends HookConsumerWidget {
+class WordCreationPartWidget extends HookConsumerWidget
+    with RoutingUtilsAccessor {
   final WordCreationWordPartSpecification initialWordPartSpecification;
+  final WordCreationRequest creationRequest;
   const WordCreationPartWidget(
-      {required this.initialWordPartSpecification, Key? key})
+      {required this.initialWordPartSpecification,
+      required this.creationRequest,
+      Key? key})
       : super(key: key);
+
+  void goToPronunciationCreationPage(
+      ValueNotifier<WordCreationWordPartSpecification>
+          wordPartSpecificationNotifier) {
+    router().push("/pronunciation_creation", extra: {
+      "word_creation_request": creationRequest,
+      "part": initialWordPartSpecification.part,
+      "on_submit": (newPronunciation) =>
+          addNewlyCreatedPronunciationToSpecification(
+              newPronunciation, wordPartSpecificationNotifier),
+      "on_cancel": () {}
+    });
+  }
+
+  void addNewlyCreatedPronunciationToSpecification(
+      PronunciationCreationRequest creationRequest,
+      ValueNotifier<WordCreationWordPartSpecification>
+          wordPartSpecificationNotifier) {}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -113,7 +137,8 @@ class WordCreationPartWidget extends HookConsumerWidget {
                 RoundedRectangleTextTagIconButton(
                     icon: Icons.mic,
                     text: "Add pronunciation",
-                    onClicked: () {})
+                    onClicked: () =>
+                        goToPronunciationCreationPage(wordPartSpecification))
               ]),
               Row(children: [
                 RoundedRectangleTextTagAddButton(
