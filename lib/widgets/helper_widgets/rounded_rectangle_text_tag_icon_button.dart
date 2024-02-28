@@ -1,45 +1,35 @@
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
-class RoundedRectangleTextTagAddButton extends HookWidget {
+class RoundedRectangleTextTagIconButton extends StatelessWidget {
   final bool filled;
   final EdgeInsets padding;
   final String text;
   final Function() onClicked;
-  final bool useSecondaryColor;
-
-  const RoundedRectangleTextTagAddButton(
+  final IconData icon;
+  const RoundedRectangleTextTagIconButton(
       {required this.text,
+      required this.icon,
       required this.onClicked,
       this.filled = false,
-      this.useSecondaryColor = false,
       this.padding = const EdgeInsets.all(8),
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {
     double size = 25;
-    Color mainColor = useSecondaryColor
-        ? Theme.of(context).colorScheme.secondary
-        : Theme.of(context).colorScheme.primary;
+    Color mainColor = Theme.of(context).colorScheme.primary;
     return InkWell(
       onTap: onClicked,
       child: RoundedRectangleTag(
         filled: filled,
         padding: padding,
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Container(
-              width: size,
-              height: size,
-              decoration:
-                  BoxDecoration(shape: BoxShape.circle, color: mainColor),
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-                size: (80 * size) / 100,
-              )),
+          Icon(
+            icon,
+            color: filled ? Colors.white : mainColor,
+            size: size,
+          ),
           Padding(
               padding: EdgeInsets.only(left: 10),
               child: Text(text,

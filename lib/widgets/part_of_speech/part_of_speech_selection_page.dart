@@ -184,10 +184,13 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     if (selectedPart.value == null) {
       ToastShower().showToast("No part of speech selected");
       onCancel.call();
+      router().pop();
+
       return;
     }
 
     onSelectionSubmitted.call(selectedPart.value!);
+    router().pop();
   }
 
   @override

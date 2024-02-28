@@ -129,7 +129,7 @@ class PartOfSpeechCreationPage extends HookConsumerWidget
                       child: TextFormField(
                         minLines: 8,
                         maxLines: 100,
-                        maxLength: 8000,
+                        maxLength: 2500,
                         onChanged: FormHelper.generateFormValueEditor(
                             "description", formValues),
                         decoration: InputDecoration(

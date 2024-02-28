@@ -7,6 +7,7 @@ import 'package:dictionary_app/services/toast/toast_shower.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_word_part_specification.dart';
 import 'package:dictionary_app/widgets/helper_widgets/go_back_panel.dart';
+import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_button.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_add_button.dart';
 import 'package:dictionary_app/widgets/word/word_creation_part_widget.dart';
 import 'package:flutter/material.dart';
@@ -112,23 +113,34 @@ class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
                           ),
                           if (creationRequest.value.parts.isNotEmpty)
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: creationRequest.value.parts
                                   .map((e) => WordCreationPartWidget(
-                                      wordPartSpecification: e))
+                                      initialWordPartSpecification: e))
                                   .cast<Widget>()
                                   .separator(() => Padding(
                                       padding: EdgeInsets.only(top: 10)))
                                   .toList(),
                             ),
                           Padding(
-                            padding: EdgeInsets.only(top: 15),
+                            padding: EdgeInsets.only(top: 20),
                             child: RoundedRectangleTextTagAddButton(
                               text: "Add part",
                               onClicked: () {
                                 goToPartOfSpeechCreation(creationRequest);
                               },
                             ),
-                          )
+                          ),
+                          Row(children: [
+                            Expanded(
+                              child: Padding(
+                                  padding: EdgeInsets.only(top: 20, bottom: 40),
+                                  child: RoundedRectangleTextButton(
+                                    text: "Create",
+                                    onPressed: () {},
+                                  )),
+                            )
+                          ])
                         ],
                       )))
             ],
