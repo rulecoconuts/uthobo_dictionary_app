@@ -23,9 +23,13 @@ class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
   void goToPartOfSpeechCreation(
       ValueNotifier<WordCreationRequest> creationRequest) async {
     router().push("/part_of_speech_selection", extra: <String, dynamic>{
-      "on_selection_submitted": (PartOfSpeechDomainObject newPart) =>
-          addPartOfSpeech(newPart, creationRequest),
-      "on_cancel": () {}
+      "on_selection_submitted": (PartOfSpeechDomainObject newPart) {
+        router().pop();
+        addPartOfSpeech(newPart, creationRequest);
+      },
+      "on_cancel": () {
+        router().pop();
+      }
     });
   }
 

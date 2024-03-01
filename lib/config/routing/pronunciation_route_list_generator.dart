@@ -14,6 +14,8 @@ class PronunciationRouteListGenerator extends RouteListGenerator {
               return PronunciationCreationPage(
                   wordCreationRequest: args["word_creation_request"],
                   part: args["part"],
+                  initialPronunciationRequest:
+                      args["initial_pronunciation_request"],
                   onSubmit: args["on_submit"],
                   onCancel: args["on_cancel"]);
             })

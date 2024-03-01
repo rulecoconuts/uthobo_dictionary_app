@@ -17,12 +17,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class PartOfSpeechCreationPage extends HookConsumerWidget
     with RoutingUtilsAccessor {
   final Function(PartOfSpeechDomainObject newPart) onSubmit;
-  final void Function() onCancel;
+  final void Function()? onCancel;
   final String? previousSearchString;
   final ApiPageDetails? previousPageDetails;
   const PartOfSpeechCreationPage(
       {required this.onSubmit,
-      required this.onCancel,
+      this.onCancel,
       this.previousSearchString,
       this.previousPageDetails,
       Key? key})
@@ -48,7 +48,7 @@ class PartOfSpeechCreationPage extends HookConsumerWidget
           .addNew(newPartDetails);
 
       onSubmit.call(createdPart);
-      router().pop();
+      // router().pop();
     } on ApiError catch (e, stackTrace) {
       String message = e.generateCompiledErrorMessages();
       error.value =
@@ -80,7 +80,7 @@ class PartOfSpeechCreationPage extends HookConsumerWidget
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: GoBackPanel(after: onCancel),
+                      child: GoBackPanel(onTap: onCancel),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10)

@@ -1,17 +1,20 @@
+import 'package:dictionary_app/accessors/pronunciation_utils_accessor.dart';
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_creation_request.dart';
+import 'package:dictionary_app/services/toast/toast_shower.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_word_part_specification.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_add_button.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_icon_button.dart';
+import 'package:dictionary_app/widgets/pronunciation/pronunciation_creation_request_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class WordCreationPartWidget extends HookConsumerWidget
-    with RoutingUtilsAccessor {
+    with RoutingUtilsAccessor, PronunciationUtilsAccessor {
   final WordCreationWordPartSpecification initialWordPartSpecification;
   final WordCreationRequest creationRequest;
   const WordCreationPartWidget(
@@ -21,22 +24,52 @@ class WordCreationPartWidget extends HookConsumerWidget
       : super(key: key);
 
   void goToPronunciationCreationPage(
-      ValueNotifier<WordCreationWordPartSpecification>
-          wordPartSpecificationNotifier) {
+    ValueNotifier<WordCreationWordPartSpecification>
+        wordPartSpecificationNotifier,
+    PronunciationCreationRequest? pronunciation,
+  ) {
     router().push("/pronunciation_creation", extra: {
       "word_creation_request": creationRequest,
       "part": initialWordPartSpecification.part,
-      "on_submit": (newPronunciation) =>
-          addNewlyCreatedPronunciationToSpecification(
-              newPronunciation, wordPartSpecificationNotifier),
-      "on_cancel": () {}
+      "initial_pronunciation_request": pronunciation,
+      "on_submit": (newPronunciation) {
+        router().pop();
+        addNewlyCreatedPronunciationToSpecification(newPronunciation,
+            wordPartSpecificationNotifier, pronunciation == null);
+      },
     });
+  }
+
+  void deletePronunciation(
+      PronunciationCreationRequest pronunciation,
+      ValueNotifier<WordCreationWordPartSpecification>
+          wordCreationWordPartSpecification) async {
+    wordCreationWordPartSpecification.value.pronunciations
+        .remove(pronunciation);
+    await pronunciationDeletionService()
+        .deletePronunciationCreationRequest(pronunciation);
+    wordCreationWordPartSpecification.notifyListeners();
   }
 
   void addNewlyCreatedPronunciationToSpecification(
       PronunciationCreationRequest creationRequest,
       ValueNotifier<WordCreationWordPartSpecification>
-          wordPartSpecificationNotifier) {}
+          wordPartSpecificationNotifier,
+      bool isNew) {
+    if (creationRequest.audioUrl.isEmpty) {
+      ToastShower().showToast("No audio pronunciation was recorded");
+      if (!isNew) {
+        wordPartSpecificationNotifier.value.pronunciations
+            .remove(creationRequest);
+      }
+      return;
+    }
+
+    if (isNew) {
+      wordPartSpecificationNotifier.value.pronunciations.add(creationRequest);
+    }
+    wordPartSpecificationNotifier.notifyListeners();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -133,12 +166,24 @@ class WordCreationPartWidget extends HookConsumerWidget
                         ),
                       ),
                     ]),
+              // Existing pronunciation requests
+              if (wordPartSpecification.value.pronunciations.isNotEmpty)
+                ...wordPartSpecification.value.pronunciations
+                    .map((e) => PronunciationCreationRequestDisplay(
+                          request: e,
+                          onInfoClicked: (pronunciation) =>
+                              goToPronunciationCreationPage(
+                                  wordPartSpecification, pronunciation),
+                          onDeleteClicked: (pronunciation) =>
+                              deletePronunciation(
+                                  pronunciation, wordPartSpecification),
+                        )),
               Row(children: [
                 RoundedRectangleTextTagIconButton(
                     icon: Icons.mic,
                     text: "Add pronunciation",
-                    onClicked: () =>
-                        goToPronunciationCreationPage(wordPartSpecification))
+                    onClicked: () => goToPronunciationCreationPage(
+                        wordPartSpecification, null))
               ]),
               Row(children: [
                 RoundedRectangleTextTagAddButton(

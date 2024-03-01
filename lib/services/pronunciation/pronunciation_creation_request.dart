@@ -44,4 +44,12 @@ class PronunciationCreationRequest {
 
   factory PronunciationCreationRequest.fromJson(Map<String, dynamic> json) =>
       _$PronunciationCreationRequestFromJson(json);
+
+  @override
+  int get hashCode =>
+      id == null ? Object.hash(audioUrl, null) : Object.hash(id, null);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is PronunciationCreationRequest && other.hashCode == hashCode;
 }

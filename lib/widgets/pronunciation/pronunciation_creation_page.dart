@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:dictionary_app/accessors/pronunciation_utils_accessor.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_creation_request.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
@@ -13,16 +14,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class PronunciationCreationPage extends HookConsumerWidget {
+class PronunciationCreationPage extends HookConsumerWidget
+    with PronunciationUtilsAccessor {
   final WordCreationRequest wordCreationRequest;
   final PartOfSpeechDomainObject part;
   final Function(PronunciationCreationRequest request) onSubmit;
-  final void Function() onCancel;
+  final void Function()? onCancel;
+  final PronunciationCreationRequest? initialPronunciationRequest;
   const PronunciationCreationPage(
       {required this.onSubmit,
       required this.wordCreationRequest,
       required this.part,
-      required this.onCancel,
+      this.onCancel,
+      this.initialPronunciationRequest,
       Key? key})
       : super(key: key);
 
@@ -37,6 +41,7 @@ class PronunciationCreationPage extends HookConsumerWidget {
     // recorderController.notifyListeners();
   }
 
+  /// Stop recording audio
   void stopRecording(
       ValueNotifier<RecorderController> recorderController,
       ValueNotifier<PronunciationCreationRequest> pronunciationCreationRequest,
@@ -45,6 +50,11 @@ class PronunciationCreationPage extends HookConsumerWidget {
         await recorderController.value.stop() ?? "";
     pronunciationCreationRequest.value.audioMillisecondDuration =
         recorderController.value.recordedDuration.inMilliseconds;
+    pronunciationCreationRequest.value.audioFileType =
+        recorderController.value.androidOutputFormat.name;
+
+    File audioFile = File(pronunciationCreationRequest.value.audioUrl);
+    pronunciationCreationRequest.value.audioByteSize = audioFile.lengthSync();
     // await playerController.value.preparePlayer(
     //     path: pronunciationCreationRequest.value.audioUrl, noOfSamples: 400);
     // pronunciationCreationRequest.notifyListeners();
@@ -79,25 +89,27 @@ class PronunciationCreationPage extends HookConsumerWidget {
   Future deleteRecording(
       ValueNotifier<PronunciationCreationRequest> pronunciationCreationRequest,
       ValueNotifier<PlayerController> playerController) async {
-    String audioUrl = pronunciationCreationRequest.value.audioUrl;
-    if (audioUrl.isEmpty) return;
-
-    pronunciationCreationRequest.value.audioUrl = "";
-    pronunciationCreationRequest.value.audioByteSize = null;
-    pronunciationCreationRequest.notifyListeners();
+    if (pronunciationCreationRequest.value.audioUrl.isEmpty) return;
     try {
       await playerController.value.pausePlayer();
 
-      File(audioUrl).deleteSync();
+      await pronunciationDeletionService().deletePronunciationCreationRequest(
+          pronunciationCreationRequest.value);
     } catch (e) {
       print(e);
     }
+
+    pronunciationCreationRequest.notifyListeners();
+  }
+
+  void submit(PronunciationCreationRequest pronunciationCreationRequest) {
+    onSubmit(pronunciationCreationRequest);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var pronunciationCreationRequest =
-        useState(PronunciationCreationRequest(audioUrl: ""));
+    var pronunciationCreationRequest = useState(initialPronunciationRequest ??
+        PronunciationCreationRequest(audioUrl: ""));
     var recorderController = useState(RecorderController());
     var playerController = useState(PlayerController());
     var recorderState = useState(recorderController.value.recorderState);
@@ -305,9 +317,8 @@ class PronunciationCreationPage extends HookConsumerWidget {
                     .copyWith(top: 40, bottom: 40),
                 child: RoundedRectangleTextButton(
                     text: "Save",
-                    onPressed: () {
-                      // TODO: write submit behaviour
-                    }),
+                    onPressed: () =>
+                        submit(pronunciationCreationRequest.value)),
               )
             ],
           ),

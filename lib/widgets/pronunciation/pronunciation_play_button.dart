@@ -5,11 +5,15 @@ class PronunciationPlayButton extends StatelessWidget {
   final bool isPlaying;
   final void Function() onPlay;
   final void Function() onStop;
+  final Color? color;
+  final bool filled;
   const PronunciationPlayButton(
       {this.size = 100,
       required this.onPlay,
       required this.isPlaying,
       required this.onStop,
+      this.filled = false,
+      this.color,
       super.key});
 
   @override
@@ -22,10 +26,13 @@ class PronunciationPlayButton extends StatelessWidget {
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Theme.of(context).colorScheme.primary)),
+              border: Border.all(
+                  color: color ?? Theme.of(context).colorScheme.primary)),
           child: Icon(
-            isPlaying ? Icons.pause_outlined : Icons.play_arrow_outlined,
-            color: Theme.of(context).colorScheme.primary,
+            isPlaying
+                ? (filled ? Icons.pause : Icons.pause_outlined)
+                : (filled ? Icons.play_arrow : Icons.play_arrow_outlined),
+            color: color ?? Theme.of(context).colorScheme.primary,
           ),
         ));
   }

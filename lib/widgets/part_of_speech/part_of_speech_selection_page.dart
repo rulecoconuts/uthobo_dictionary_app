@@ -22,7 +22,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class PartOfSpeechSelectionPage extends HookConsumerWidget
     with RoutingUtilsAccessor {
   final Function(PartOfSpeechDomainObject part) onSelectionSubmitted;
-  final Function() onCancel;
+  final Function()? onCancel;
   const PartOfSpeechSelectionPage(
       {required this.onSelectionSubmitted, required this.onCancel, Key? key})
       : super(key: key);
@@ -101,10 +101,11 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     router().push("/part_of_speech_creation", extra: <String, dynamic>{
       "previous_search_string": processSearchString(searchString.value),
       "previous_page_details": currentPageDetails.value,
-      "on_submit": (PartOfSpeechDomainObject newPart) =>
-          addNewlyCreatedPartToList(newPart, selectedPart, newPartNotifier,
-              searchString, pages, currentPageDetails),
-      "on_cancel": () {}
+      "on_submit": (PartOfSpeechDomainObject newPart) {
+        router().pop();
+        addNewlyCreatedPartToList(newPart, selectedPart, newPartNotifier,
+            searchString, pages, currentPageDetails);
+      }
     });
   }
 
@@ -183,14 +184,11 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
   void save(ValueNotifier<PartOfSpeechDomainObject?> selectedPart) {
     if (selectedPart.value == null) {
       ToastShower().showToast("No part of speech selected");
-      onCancel.call();
-      router().pop();
 
       return;
     }
 
     onSelectionSubmitted.call(selectedPart.value!);
-    router().pop();
   }
 
   @override
@@ -259,7 +257,7 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
               Padding(
                 padding: EdgeInsets.only(top: 30),
                 child: GoBackPanel(
-                  after: onCancel,
+                  onTap: onCancel,
                 ),
               ),
               Expanded(
