@@ -3,7 +3,9 @@ import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_creation_request.dart';
 import 'package:dictionary_app/services/toast/toast_shower.dart';
+import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
+import 'package:dictionary_app/services/word/word_creation_translation_specification.dart';
 import 'package:dictionary_app/services/word/word_creation_word_part_specification.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_add_button.dart';
@@ -13,16 +15,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+/// Displays a part of speech creation object during the word creation process
 class WordCreationPartWidget extends HookConsumerWidget
     with RoutingUtilsAccessor, PronunciationUtilsAccessor {
   final WordCreationWordPartSpecification initialWordPartSpecification;
   final WordCreationRequest creationRequest;
+  final bool isSourceWord;
   const WordCreationPartWidget(
       {required this.initialWordPartSpecification,
       required this.creationRequest,
+      this.isSourceWord = true,
       Key? key})
       : super(key: key);
 
+  /// Go to pronunciation creation page
   void goToPronunciationCreationPage(
     ValueNotifier<WordCreationWordPartSpecification>
         wordPartSpecificationNotifier,
@@ -71,6 +77,25 @@ class WordCreationPartWidget extends HookConsumerWidget
     wordPartSpecificationNotifier.notifyListeners();
   }
 
+  /// Go to translation creation page
+  void goToTranslationSelectionPage(
+      ValueNotifier<WordCreationWordPartSpecification>
+          wordCreationWordPartSpecification) {
+    router().push("/translation_selection", extra: <String, dynamic>{
+      "part": wordCreationWordPartSpecification.value.part,
+      "word": creationRequest.name,
+      "on_submit": (translation) {
+        addTranslation(translation);
+        router().pop();
+      },
+      "on_cancel": () {
+        router().pop();
+      }
+    });
+  }
+
+  void addTranslation(FullWordPart translation) {}
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var wordPartSpecification = useState(initialWordPartSpecification);
@@ -90,7 +115,7 @@ class WordCreationPartWidget extends HookConsumerWidget
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              // Definition textbox
+              // DEFINITION TEXTBOX
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 10),
@@ -121,6 +146,7 @@ class WordCreationPartWidget extends HookConsumerWidget
                   ),
                 ),
               ]),
+              // SHOW ADD NOTE BUTTON IF A NOTE DOES NOT ALREADY EXIST
               if (wordPartSpecification.value.note == null)
                 Row(children: [
                   RoundedRectangleTextTagAddButton(
@@ -166,7 +192,7 @@ class WordCreationPartWidget extends HookConsumerWidget
                         ),
                       ),
                     ]),
-              // Existing pronunciation requests
+              // EXISTING PRONUNCIATION REQUESTS
               if (wordPartSpecification.value.pronunciations.isNotEmpty)
                 ...wordPartSpecification.value.pronunciations
                     .map((e) => PronunciationCreationRequestDisplay(
@@ -185,10 +211,13 @@ class WordCreationPartWidget extends HookConsumerWidget
                     onClicked: () => goToPronunciationCreationPage(
                         wordPartSpecification, null))
               ]),
-              Row(children: [
-                RoundedRectangleTextTagAddButton(
-                    text: "Add translation", onClicked: () {})
-              ])
+              if (isSourceWord)
+                Row(children: [
+                  RoundedRectangleTextTagAddButton(
+                      text: "Add translation",
+                      onClicked: () =>
+                          goToTranslationSelectionPage(wordPartSpecification))
+                ])
             ]
                 .separator(() => Padding(padding: EdgeInsets.only(top: 10)))
                 .toList(),

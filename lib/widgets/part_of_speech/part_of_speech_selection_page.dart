@@ -246,7 +246,7 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     return Material(
       child: Scaffold(
           floatingActionButton: FloatingActionButton.large(
-              child: Icon(
+              child: const Icon(
                 Icons.add,
                 color: Colors.white,
               ),

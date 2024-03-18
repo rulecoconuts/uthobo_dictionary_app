@@ -16,9 +16,10 @@ import 'package:form_validator/form_validator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-class WordCreationPage extends HookConsumerWidget with RoutingUtilsAccessor {
+class SourceWordCreationPage extends HookConsumerWidget
+    with RoutingUtilsAccessor {
   final String? searchString;
-  const WordCreationPage({Key? key, this.searchString}) : super(key: key);
+  const SourceWordCreationPage({Key? key, this.searchString}) : super(key: key);
 
   void goToPartOfSpeechCreation(
       ValueNotifier<WordCreationRequest> creationRequest) async {

@@ -5,6 +5,7 @@ import 'package:dictionary_app/config/routing/language_selection_route_list_gene
 import 'package:dictionary_app/config/routing/part_of_speech_route_list_generator.dart';
 import 'package:dictionary_app/config/routing/pronunciation_route_list_generator.dart';
 import 'package:dictionary_app/config/routing/route_list_generator.dart';
+import 'package:dictionary_app/config/routing/translation_route_list_generator.dart';
 import 'package:dictionary_app/config/routing/word_route_list_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -19,7 +20,8 @@ class MainRoutingConfig extends IocConfig {
       LanguageSelectionRouteListGenerator(),
       WordRouteListGenerator(),
       PartOfSpeechRouteListGenerator(),
-      PronunciationRouteListGenerator()
+      PronunciationRouteListGenerator(),
+      TranslationRouteListGenerator()
     ];
   }
 

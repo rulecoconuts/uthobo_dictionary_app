@@ -3,6 +3,7 @@ import 'package:dictionary_app/services/language/providers/language_control.dart
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/pagination/api_sort.dart';
+import 'package:dictionary_app/services/pagination/pagination_helper.dart';
 import 'package:dictionary_app/widgets/helper_widgets/shared_main_loading_widget.dart';
 import 'package:dictionary_app/widgets/language/language_not_found_page.dart';
 import 'package:flutter/material.dart';
@@ -33,56 +34,12 @@ class LanguageSelectionResultPanel extends HookConsumerWidget {
 
   void search(ValueNotifier<ApiPageDetails> currentPageDetails,
       ValueNotifier<Map<int, ApiPage<LanguageDomainObject>>> pageMap) {
-    var next = getNextPageDetails(pageMap);
+    var next = PaginationHelper().getNextPageDetails(pageMap.value);
     currentPageDetails.value = next;
-  }
-
-  ApiPageDetails getNextPageDetails(
-      ValueNotifier<Map<int, ApiPage<LanguageDomainObject>>> pageMap) {
-    // List<int> pageNumbers = pageMap.value.keys.toList();
-    // pageNumbers.sort();
-    // if (pageNumbers.isEmpty) return initialPageDetails;
-
-    return (pageMap.value.entries
-                .where((element) => element.value.content.isNotEmpty)
-                .toList()
-              ..sort((a, b) => a.key.compareTo(b.key)))
-            .map((e) => e.value)
-            .lastOrNull
-            ?.pageable
-            .next() ??
-        initialPageDetails;
-  }
-
-  void fetchNewPageIfCloseToEnd(
-      ItemPositionsListener itemPositionsListener,
-      ValueNotifier<ApiPageDetails> currentPageDetails,
-      ValueNotifier<Map<int, ApiPage<LanguageDomainObject>>> pageMap) {
-    var languagePositions = itemPositionsListener.itemPositions.value;
-    if (languagePositions.isEmpty) return;
-
-    var languageList = getLanguageListFromPageMap(pageMap);
-
-    int distanceFromEnd =
-        languageList.length - languagePositions.last.index - 1;
-
-    if (distanceFromEnd <= maximumDistanceFromEndForSearch()) {
-      search(currentPageDetails, pageMap);
-    }
   }
 
   void changeSelection(LanguageDomainObject language) {
     onSelectionChanged.call(language);
-  }
-
-  List<LanguageDomainObject> getLanguageListFromPageMap(
-      ValueNotifier<Map<int, ApiPage<LanguageDomainObject>>> pageMap) {
-    List<int> pageNumbers = pageMap.value.keys.toList();
-    pageNumbers.sort();
-
-    return pageNumbers
-        .map((e) => pageMap.value[e]!.content)
-        .fold([], (previousValue, element) => previousValue..addAll(element));
   }
 
   @override
@@ -90,28 +47,32 @@ class LanguageSelectionResultPanel extends HookConsumerWidget {
     var currentPageDetails = useState(initialPageDetails);
     // var languageList = useState<List<LanguageDomainObject>>([]);
     var hasProcessedLastResult = useState(false);
-    final ItemScrollController itemScrollController = ItemScrollController();
-    final ScrollOffsetController scrollOffsetController =
-        ScrollOffsetController();
-    final ItemPositionsListener itemPositionsListener =
-        ItemPositionsListener.create();
-    final ScrollOffsetListener scrollOffsetListener =
-        ScrollOffsetListener.create();
+
+    final itemScrollController = useState(ItemScrollController());
+    final scrollOffsetController = useState(ScrollOffsetController());
+    final itemPositionsListener = useState(ItemPositionsListener.create());
+    final scrollOffsetListener = useState(ScrollOffsetListener.create());
     var pageMap = useState(<int, ApiPage<LanguageDomainObject>>{});
     var fetchedResult = ref.watch(languageControlProvider(
         processSearchTerm(namePattern), currentPageDetails.value));
 
     // Listen to changes in visible items
     useEffect(() {
-      Function() onVisibleLanguagesChanged = () => fetchNewPageIfCloseToEnd(
-          itemPositionsListener, currentPageDetails, pageMap);
+      Function() onVisibleLanguagesChanged = () {
+        PaginationHelper().performIfCloseToEnd(
+            () => search(currentPageDetails, pageMap),
+            itemPositionsListener.value,
+            currentPageDetails.value,
+            pageMap.value,
+            maximumDistanceFromEndForSearch: maximumDistanceFromEndForSearch());
+      };
 
-      itemPositionsListener.itemPositions
+      itemPositionsListener.value.itemPositions
           .addListener(onVisibleLanguagesChanged);
 
-      return () => itemPositionsListener.itemPositions
+      return () => itemPositionsListener.value.itemPositions
           .removeListener(onVisibleLanguagesChanged);
-    }, [itemPositionsListener.itemPositions]);
+    }, [itemPositionsListener.value.itemPositions]);
 
     if (fetchedResult.hasValue) {
       var newPage = fetchedResult.value!;
@@ -119,7 +80,7 @@ class LanguageSelectionResultPanel extends HookConsumerWidget {
     }
 
     final List<LanguageDomainObject> languageList =
-        getLanguageListFromPageMap(pageMap);
+        PaginationHelper().flattenPageMap(pageMap.value);
 
     if (languageList.isEmpty && fetchedResult.isLoading) {
       return const Center(
@@ -154,10 +115,10 @@ class LanguageSelectionResultPanel extends HookConsumerWidget {
               thickness: 2,
             )),
         itemCount: languageList.length,
-        itemScrollController: itemScrollController,
-        scrollOffsetController: scrollOffsetController,
-        itemPositionsListener: itemPositionsListener,
-        scrollOffsetListener: scrollOffsetListener,
+        itemScrollController: itemScrollController.value,
+        scrollOffsetController: scrollOffsetController.value,
+        itemPositionsListener: itemPositionsListener.value,
+        scrollOffsetListener: scrollOffsetListener.value,
       )),
       if (fetchedResult.isLoading)
         Padding(

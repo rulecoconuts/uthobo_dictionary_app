@@ -6,7 +6,7 @@ part of 'full_word_control.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fullWordControlHash() => r'4a357fb4f52b65e987df2e8df52759e81954e993';
+String _$fullWordControlHash() => r'06f45ce1ed2858f476a15f79222a115969e4c1ca';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,10 +32,12 @@ class _SystemHash {
 abstract class _$FullWordControl
     extends BuildlessAutoDisposeAsyncNotifier<ApiPage<FullWordPart>> {
   late final String namePattern;
+  late final LanguageDomainObject languageDomainObject;
   late final ApiPageDetails pageDetails;
 
   FutureOr<ApiPage<FullWordPart>> build(
-    String namePattern, {
+    String namePattern,
+    LanguageDomainObject languageDomainObject, {
     ApiPageDetails pageDetails = const ApiPageDetails(),
   });
 }
@@ -51,11 +53,13 @@ class FullWordControlFamily extends Family<AsyncValue<ApiPage<FullWordPart>>> {
 
   /// See also [FullWordControl].
   FullWordControlProvider call(
-    String namePattern, {
+    String namePattern,
+    LanguageDomainObject languageDomainObject, {
     ApiPageDetails pageDetails = const ApiPageDetails(),
   }) {
     return FullWordControlProvider(
       namePattern,
+      languageDomainObject,
       pageDetails: pageDetails,
     );
   }
@@ -66,6 +70,7 @@ class FullWordControlFamily extends Family<AsyncValue<ApiPage<FullWordPart>>> {
   ) {
     return call(
       provider.namePattern,
+      provider.languageDomainObject,
       pageDetails: provider.pageDetails,
     );
   }
@@ -90,11 +95,13 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
     FullWordControl, ApiPage<FullWordPart>> {
   /// See also [FullWordControl].
   FullWordControlProvider(
-    String namePattern, {
+    String namePattern,
+    LanguageDomainObject languageDomainObject, {
     ApiPageDetails pageDetails = const ApiPageDetails(),
   }) : this._internal(
           () => FullWordControl()
             ..namePattern = namePattern
+            ..languageDomainObject = languageDomainObject
             ..pageDetails = pageDetails,
           from: fullWordControlProvider,
           name: r'fullWordControlProvider',
@@ -106,6 +113,7 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
           allTransitiveDependencies:
               FullWordControlFamily._allTransitiveDependencies,
           namePattern: namePattern,
+          languageDomainObject: languageDomainObject,
           pageDetails: pageDetails,
         );
 
@@ -117,10 +125,12 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.namePattern,
+    required this.languageDomainObject,
     required this.pageDetails,
   }) : super.internal();
 
   final String namePattern;
+  final LanguageDomainObject languageDomainObject;
   final ApiPageDetails pageDetails;
 
   @override
@@ -129,6 +139,7 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
   ) {
     return notifier.build(
       namePattern,
+      languageDomainObject,
       pageDetails: pageDetails,
     );
   }
@@ -140,6 +151,7 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
       override: FullWordControlProvider._internal(
         () => create()
           ..namePattern = namePattern
+          ..languageDomainObject = languageDomainObject
           ..pageDetails = pageDetails,
         from: from,
         name: null,
@@ -147,6 +159,7 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         namePattern: namePattern,
+        languageDomainObject: languageDomainObject,
         pageDetails: pageDetails,
       ),
     );
@@ -162,6 +175,7 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
   bool operator ==(Object other) {
     return other is FullWordControlProvider &&
         other.namePattern == namePattern &&
+        other.languageDomainObject == languageDomainObject &&
         other.pageDetails == pageDetails;
   }
 
@@ -169,6 +183,7 @@ class FullWordControlProvider extends AutoDisposeAsyncNotifierProviderImpl<
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, namePattern.hashCode);
+    hash = _SystemHash.combine(hash, languageDomainObject.hashCode);
     hash = _SystemHash.combine(hash, pageDetails.hashCode);
 
     return _SystemHash.finish(hash);
@@ -179,6 +194,9 @@ mixin FullWordControlRef
     on AutoDisposeAsyncNotifierProviderRef<ApiPage<FullWordPart>> {
   /// The parameter `namePattern` of this provider.
   String get namePattern;
+
+  /// The parameter `languageDomainObject` of this provider.
+  LanguageDomainObject get languageDomainObject;
 
   /// The parameter `pageDetails` of this provider.
   ApiPageDetails get pageDetails;
@@ -191,6 +209,9 @@ class _FullWordControlProviderElement
 
   @override
   String get namePattern => (origin as FullWordControlProvider).namePattern;
+  @override
+  LanguageDomainObject get languageDomainObject =>
+      (origin as FullWordControlProvider).languageDomainObject;
   @override
   ApiPageDetails get pageDetails =>
       (origin as FullWordControlProvider).pageDetails;

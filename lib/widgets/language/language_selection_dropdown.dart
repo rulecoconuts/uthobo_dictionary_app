@@ -27,19 +27,22 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
       ValueNotifier<String> searchTermNotifier,
       ValueNotifier<LanguageDomainObject?> selectedLanguage,
       ValueNotifier<TextEditingController> textEditController,
-      ValueNotifier<bool> isResultsPanelVisible) {
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 300),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(width: 0.5),
-          borderRadius: BorderRadius.circular(12)),
-      child: LanguageSelectionResultPanel(
-        namePattern: searchTermNotifier.value,
-        onSelectionChanged: (language) => changeSelection(language,
-            selectedLanguage, textEditController, isResultsPanelVisible),
-      ),
-    );
+      ValueNotifier<bool> isResultsPanelVisible,
+      ValueNotifier<String> groupId) {
+    return TapRegion(
+        groupId: groupId.value,
+        child: Container(
+          constraints: const BoxConstraints(maxHeight: 300),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(width: 0.5),
+              borderRadius: BorderRadius.circular(12)),
+          child: LanguageSelectionResultPanel(
+            namePattern: searchTermNotifier.value,
+            onSelectionChanged: (language) => changeSelection(language,
+                selectedLanguage, textEditController, isResultsPanelVisible),
+          ),
+        ));
   }
 
   void changeSelection(
@@ -80,12 +83,26 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
     });
   }
 
+  void hidePanelBecauseOfLostFocus(
+      ValueNotifier<bool> isResultsPanelVisible,
+      ValueNotifier<TextEditingController> textEditingController,
+      ValueNotifier<LanguageDomainObject?> selectedLanguage) {
+    if (!isResultsPanelVisible.value) return;
+    isResultsPanelVisible.value = false;
+
+    if (selectedLanguage.value != null) {
+      textEditingController.value.text = selectedLanguage.value!.name;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var isResultsPanelVisible = useState(false);
     var inputWaitTimer = useState<Timer?>(null);
     var textEditController = useState(TextEditingController());
     var selectedLanguage = useState<LanguageDomainObject?>(initialLanguage);
+    var groupId = useState(
+        "${key?.hashCode}_${hashCode}_${DateTime.now().microsecondsSinceEpoch}");
 
     useEffect(() {
       textEditController.value.text = initialLanguage?.name ?? "";
@@ -104,14 +121,22 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
             offset: Offset(0, 10)),
         portalFollower: isResultsPanelVisible.value
             ? getSearchPanel(searchTermNotifier, selectedLanguage,
-                textEditController, isResultsPanelVisible)
+                textEditController, isResultsPanelVisible, groupId)
             : null,
-        child: TextFormField(
-          controller: textEditController.value,
-          onChanged: (value) => onSearchTermChanged(value, searchTermNotifier,
-              inputWaitTimer, isResultsPanelVisible, ref),
-          decoration: InputDecoration(
-              border: border, hintText: "Start typing a language"),
-        ));
+        child: TapRegion(
+            groupId: groupId.value,
+            onTapOutside: (pointerEvent) => hidePanelBecauseOfLostFocus(
+                isResultsPanelVisible, textEditController, selectedLanguage),
+            child: TextFormField(
+              controller: textEditController.value,
+              onChanged: (value) => onSearchTermChanged(
+                  value,
+                  searchTermNotifier,
+                  inputWaitTimer,
+                  isResultsPanelVisible,
+                  ref),
+              decoration: InputDecoration(
+                  border: border, hintText: "Start typing a language"),
+            )));
   }
 }

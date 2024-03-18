@@ -4,6 +4,7 @@ import 'package:dictionary_app/services/auth/login/login_service.dart';
 import 'package:dictionary_app/services/auth/login/login_service_auth_storage_auth_backed_web_service_mixin.dart';
 import 'package:dictionary_app/services/auth/login/web_service_mixin.dart';
 import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
+import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
@@ -40,8 +41,32 @@ class SimpleWordRESTService
       {ApiPageDetails pageDetails = const ApiPageDetails()}) async {
     try {
       String url = "${serverDetails.url}/words/nameSearch/full";
-      var response = await dio.post(url,
-          queryParameters: {"name": namePattern},
+      var response = await dio.get(url,
+          queryParameters: {
+            "name": namePattern,
+          },
+          options: Options(
+            headers: await generateAuthHeaders(),
+          ));
+
+      return serializationUtils
+          .deserializeIntoPage<FullWordPart>(response.data);
+    } on DioException catch (e) {
+      handleDioException(e);
+      rethrow;
+    }
+  }
+
+  Future<ApiPage<FullWordPart>> searchForFullWordPartByNameInLanguage(
+      String namePattern, LanguageDomainObject language,
+      {ApiPageDetails pageDetails = const ApiPageDetails()}) async {
+    try {
+      String url =
+          "${serverDetails.url}/words/language/${language.id}/nameSearch/full";
+      var response = await dio.get(url,
+          queryParameters: {
+            "name": namePattern,
+          },
           options: Options(
             headers: await generateAuthHeaders(),
           ));

@@ -1,4 +1,5 @@
 import 'package:dictionary_app/accessors/word_utils_accessor.dart';
+import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/provider_commons/cache_for_extension.dart';
@@ -10,10 +11,13 @@ part 'full_word_control.g.dart';
 @riverpod
 class FullWordControl extends _$FullWordControl with WordUtlsAccessor {
   @override
-  Future<ApiPage<FullWordPart>> build(String namePattern,
+  Future<ApiPage<FullWordPart>> build(
+      String namePattern, LanguageDomainObject languageDomainObject,
       {ApiPageDetails pageDetails = const ApiPageDetails()}) async {
     var result = (await wordDomainService())
-        .searchForFullWordPartByName(namePattern, pageDetails: pageDetails);
+        .searchForFullWordPartByNameInLanguage(
+            namePattern, languageDomainObject,
+            pageDetails: pageDetails);
 
     ref.cacheFor(const Duration(minutes: 1));
 
