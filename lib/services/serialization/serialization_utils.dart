@@ -66,6 +66,10 @@ class SerializationUtils {
     return (_serializers[T] ?? (e) => (e as dynamic).toJson()).call(entity);
   }
 
+  List<Map<String, dynamic>> serializeList<T>(List<T> entities) {
+    return entities.map(serialize<T>).toList();
+  }
+
   T deserialize<T>(Map<String, dynamic> jsonMap) {
     return getDeserializer<T>().call(jsonMap);
   }

@@ -7,8 +7,13 @@ part 'word_creation_request_domain_object.g.dart';
 class WordCreationRequest {
   String name;
 
+  /// The translation context to use when creating the word.
+  /// Word is created as part of the source language.
+  /// Translations are created as part of the target language
   TranslationContextDomainObject translationContext;
 
+  /// WordPart to be created to accompany thee word.
+  /// At least one is required
   List<WordCreationWordPartSpecification> parts = [];
 
   WordCreationRequest(

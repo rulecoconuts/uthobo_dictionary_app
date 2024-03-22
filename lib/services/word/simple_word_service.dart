@@ -3,6 +3,8 @@ import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/simple_word_REST_service.dart';
+import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
+import 'package:dictionary_app/services/word/word_creation_result.dart';
 import 'package:dictionary_app/services/word/word_service.dart';
 
 class SimpleWordService implements WordService {
@@ -23,5 +25,15 @@ class SimpleWordService implements WordService {
     return await simpleWordRESTService.searchForFullWordPartByNameInLanguage(
         namePattern, language,
         pageDetails: pageDetails);
+  }
+
+  @override
+  Future<WordCreationResult> createdWord(
+      WordCreationRequest creationRequest) async {
+    // Create word
+    WordCreationResult result =
+        await simpleWordRESTService.createWord(creationRequest);
+
+    return result;
   }
 }

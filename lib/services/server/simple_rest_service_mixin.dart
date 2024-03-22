@@ -26,12 +26,24 @@ mixin SimpleDioBackedRESTServiceMixin<T>
     return getEndpoint();
   }
 
+  Future<String> getBulkCreationUrl(List<T> models) async {
+    return "${getEndpoint()}/bulk";
+  }
+
   T deserialize(Map<String, dynamic> map) {
     return getSerializationUtils().deserialize<T>(map);
   }
 
   Map<String, dynamic> serialize(T model) {
     return getSerializationUtils().serialize<T>(model);
+  }
+
+  List<Map<String, dynamic>> serializeList(List<T> models) {
+    return getSerializationUtils().serializeList(models);
+  }
+
+  List<T> deserializeList(List<Map<String, dynamic>> models) {
+    return getSerializationUtils().deserializeList(models);
   }
 
   ApiPage<T> deserializeIntoPage(Map<String, dynamic> map) {
@@ -49,6 +61,23 @@ mixin SimpleDioBackedRESTServiceMixin<T>
 
       // parse response body into [T]
       return deserialize(response.data);
+    } on DioException catch (e) {
+      handleDioException(e);
+      rethrow;
+    }
+  }
+
+  /// Create multiple models
+  @override
+  Future<List<T>> createAll(List<T> models) async {
+    try {
+      var dio = getDio();
+      var response = await dio.post(await getBulkCreationUrl(models),
+          data: serializeList(models),
+          options: Options(headers: await generateAuthHeaders()));
+
+      // parse response body into [T]
+      return deserializeList(response.data);
     } on DioException catch (e) {
       handleDioException(e);
       rethrow;

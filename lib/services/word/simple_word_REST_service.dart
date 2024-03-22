@@ -12,6 +12,8 @@ import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/server/server_details.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
+import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
+import 'package:dictionary_app/services/word/word_creation_result.dart';
 import 'package:dictionary_app/services/word/word_service.dart';
 import 'package:dio/dio.dart';
 
@@ -96,5 +98,25 @@ class SimpleWordRESTService
   @override
   Future<LoginService<Auth, Auth>> getLoginService() async {
     return loginService;
+  }
+
+  /// Create word and its relations on the backend
+  Future<WordCreationResult> createWord(
+      WordCreationRequest wordCreationRequest) async {
+    try {
+      String url = "${serverDetails.url}/words";
+
+      // Create word
+      var response = await dio.post(url,
+          data: serializationUtils.serialize(wordCreationRequest),
+          options: Options(
+            headers: await generateAuthHeaders(),
+          ));
+
+      return serializationUtils.deserialize<WordCreationResult>(response.data);
+    } on DioException catch (e) {
+      handleDioException(e);
+      rethrow;
+    }
   }
 }

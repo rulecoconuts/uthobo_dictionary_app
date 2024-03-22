@@ -25,4 +25,17 @@ mixin SimpleRESTServiceBackedDomainServiceMixin<T, R>
   Future<bool> delete(T model) async {
     return await getRESTService().delete(toRemote(model));
   }
+
+  List<R> toRemoteList(List<T> models) {
+    return models.map(toRemote).toList();
+  }
+
+  List<T> toDomainList(List<R> remote) {
+    return remote.map(toDomain).toList();
+  }
+
+  @override
+  Future<List<T>> createAll(List<T> models) async {
+    return toDomainList(await getRESTService().createAll(toRemoteList(models)));
+  }
 }
