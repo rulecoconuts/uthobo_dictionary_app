@@ -77,7 +77,8 @@ mixin SimpleDioBackedRESTServiceMixin<T>
           options: Options(headers: await generateAuthHeaders()));
 
       // parse response body into [T]
-      return deserializeList(response.data);
+      return deserializeList(
+          (response.data as List).cast<Map<String, dynamic>>());
     } on DioException catch (e) {
       handleDioException(e);
       rethrow;

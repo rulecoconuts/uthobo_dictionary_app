@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:dictionary_app/accessors/server_utils_accessor.dart';
+import 'package:dictionary_app/services/pronunciation/isolate_upload_update.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_domain_object.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_presign_result.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_service.dart';
@@ -10,6 +11,7 @@ import 'package:dictionary_app/services/pronunciation/pronunciation_upload_sched
 import 'package:dictionary_app/services/pronunciation/pronunciation_upload_status.dart';
 import 'package:dictionary_app/services/pronunciation/upload_stage.dart';
 import 'package:dio/dio.dart';
+import 'package:mime/mime.dart';
 import 'package:mutex/mutex.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -132,21 +134,30 @@ class SimplePronunciationUploadScheduler
       return records;
     });
 
-    // Persist pronunciations
-    List<PronunciationDomainObject> newPronunciations =
-        await pronunciationService.createAll(uploadsToPersist
-            .map((e) => e.pronunciation..audioUrl = e.destinationUrl)
-            .toList());
+    if (uploadsToPersist.isEmpty) return;
+    // List<String> localFilePaths =
+    //     uploadsToPersist.map((e) => e.pronunciation.audioUrl).toList();
 
-    /// Notify listeners of upload successes
-    newPronunciations
-        .map((pronunciation) => uploadsToPersist
-            .where(
-                (element) => element.destinationUrl == pronunciation.audioUrl)
-            .firstOrNull
-          ?..pronunciation = pronunciation)
-        .nonNulls
-        .forEach(_notifySuccess);
+    try {
+      // Persist pronunciations
+      List<PronunciationDomainObject> newPronunciations =
+          await pronunciationService.createAll(uploadsToPersist
+              .map((e) => e.pronunciation..audioUrl = e.destinationUrl)
+              .toList());
+
+      /// Notify listeners of upload successes
+      newPronunciations
+          .map((pronunciation) => uploadsToPersist
+              .where(
+                  (element) => element.destinationUrl == pronunciation.audioUrl)
+              .firstOrNull
+            ?..pronunciation = pronunciation)
+          .nonNulls
+          .forEach(_notifySuccess);
+    } catch (e, stackTrace) {
+      uploadsToPersist.forEach((task) => _recordFailure(task));
+      rethrow;
+    }
   }
 
   /// Notify listeners that an upload has succeeded
@@ -173,52 +184,116 @@ class SimplePronunciationUploadScheduler
       });
     });
 
-    // Upload all
-    workerManager.execute(() {
-      newActiveTasks.forEach(_upload);
-    }, priority: WorkPriority.immediately);
+    if (newActiveTasks.isEmpty) return;
+
+    // Start all new active upload tasks in an isolate
+    _startUploadIsolateWork(newActiveTasks);
+  }
+
+  Future _startUploadIsolateWork(List<PronunciationPresignResult> tasks) async {
+    await workerManager.executeWithPort((port) async {
+      await _uploadAll(tasks, port);
+    },
+        onMessage: _handleIsolateUplodUpdate,
+        priority: WorkPriority.immediately);
+  }
+
+  /// Handle upload update messages from secondary isolates in the main isolate
+  void _handleIsolateUplodUpdate(IsolateUploadUpdate update) {
+    if (update.isComplete) {
+      _moveToAwaitingPersistenceQueue(update.pronunciationPresignResult);
+    } else if (update.isFailed) {
+      _recordFailure(update.pronunciationPresignResult);
+    } else {
+      _updateUploadProgress(update.pronunciationPresignResult,
+          update.bytesUploaded, update.totalBytes);
+    }
+  }
+
+  static Future _uploadAll(
+      List<PronunciationPresignResult> tasks, SendPort sendPort) async {
+    Dio dio = Dio();
+    var uploadTaskFutures = tasks.map((e) => _upload(e, sendPort, dio));
+
+    await Future.wait(uploadTaskFutures);
   }
 
   /// Upload pronunciation using presigned URL
-  Future _upload(PronunciationPresignResult result) async {
+  static Future _upload(
+      PronunciationPresignResult result, SendPort sendPort, Dio dio) async {
     File file = File(result.pronunciation.audioUrl);
+    int bytesUploaded = 0;
+    int length = 0;
 
     try {
-      int length = await file.length();
+      length = await file.length();
 
-      var response = await dio.put(
-        result.presignedUrl,
-        data: file.openRead(),
-        options: Options(headers: {Headers.contentLengthHeader: length}),
-        onSendProgress: (count, total) =>
-            _updateUploadProgress(result, count, total),
-      );
+      var mimeType = lookupMimeType(file.path);
 
-      await _moveToAwaitingPersistenceQueue(result, response, file);
+      var response = await dio.put(result.presignedUrl,
+          data: file.openRead(),
+          options: Options(headers: {
+            Headers.contentLengthHeader: length,
+            Headers.contentTypeHeader: mimeType ?? "application/octet-stream"
+          }), onSendProgress: (count, total) {
+        // Send upload progress to main isolate
+        bytesUploaded = count;
+        sendPort.send(IsolateUploadUpdate(
+            pronunciationPresignResult: result,
+            bytesUploaded: count,
+            totalBytes: total));
+      });
+
+      // Send success to main isolate
+      sendPort.send(IsolateUploadUpdate(
+          pronunciationPresignResult: result,
+          bytesUploaded: length,
+          totalBytes: length,
+          isComplete: true));
     } catch (e, stackTrace) {
-      await _recordFailure(result, file);
+      // Send failure to main isolate
+      sendPort.send(IsolateUploadUpdate(
+          pronunciationPresignResult: result,
+          bytesUploaded: bytesUploaded,
+          totalBytes: length,
+          isFailed: true,
+          error: e,
+          stackTrace: stackTrace));
     }
   }
 
   /// Record pronunciation upload failure
-  Future _recordFailure(PronunciationPresignResult result, File file) async {
+  Future _recordFailure(PronunciationPresignResult result) async {
     await activeMutex.protectWrite(() async => active.remove(result));
-    await file.delete();
 
     // Notify listeners
     _eventStreamController.add(PronunciationUploadStatus(
         pronunciationPresignResult: result, stage: UploadStage.failed));
+
+    // Upload failed; Delete local file.
+    // Note: This can be changed to make retries possible.
+    await _deleteLocalFile(result);
   }
 
   /// Move to successful queue
   Future _moveToAwaitingPersistenceQueue(
-      PronunciationPresignResult result, Response response, File file) async {
+      PronunciationPresignResult result) async {
     await awaitingPersistenceMutex.protectWrite(() async {
       await activeMutex.protectWrite(() async {
         active.remove(result);
         awaitingPersistence.add(result);
       });
     });
+
+    // Delete local file since upload has been completed
+    await _deleteLocalFile(result);
+  }
+
+  /// Delete the local pronunciation file
+  Future _deleteLocalFile(PronunciationPresignResult result) async {
+    File file = File(result.pronunciation.audioUrl);
+
+    if (!(await file.exists())) return;
 
     await file.delete();
   }

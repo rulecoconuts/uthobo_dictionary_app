@@ -47,7 +47,7 @@ class PronunciationRESTService
 
   @override
   String getEndpoint() {
-    return "${serverDetails.url}/api/pronunciations";
+    return "${serverDetails.url}/pronunciations";
   }
 
   @override

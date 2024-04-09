@@ -18,7 +18,7 @@ class FullWordControl extends _$FullWordControl
   Future<ApiPage<FullWordPart>> build(
       String namePattern, LanguageDomainObject languageDomainObject,
       {ApiPageDetails pageDetails = const ApiPageDetails()}) async {
-    var result = (await wordDomainService())
+    var result = await (await wordDomainService())
         .searchForFullWordPartByNameInLanguage(
             namePattern, languageDomainObject,
             pageDetails: pageDetails);

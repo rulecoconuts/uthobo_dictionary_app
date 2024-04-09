@@ -6,7 +6,7 @@ part of 'full_word_control.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fullWordControlHash() => r'695250a117afdf4564861ef5c297e064d0da2cc0';
+String _$fullWordControlHash() => r'10c136162d9b5c4c3fc1f9a1934684cca9c682e5';
 
 /// Copied from Dart SDK
 class _SystemHash {

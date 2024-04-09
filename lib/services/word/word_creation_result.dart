@@ -9,12 +9,12 @@ part 'word_creation_result.g.dart';
 class WordCreationResult {
   FullWordPart word;
   List<PronunciationPresignResult> pronunciationPresignResults;
-  List<TranslationDomainObject> translationDomainObject;
+  List<TranslationDomainObject> translations;
 
   WordCreationResult(
       {required this.word,
       required this.pronunciationPresignResults,
-      required this.translationDomainObject});
+      required this.translations});
 
   Map<String, dynamic> toJson() => _$WordCreationResultToJson(this);
 

@@ -1,11 +1,14 @@
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
+import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
+import 'package:dictionary_app/services/pagination/api_sort.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/toast/toast_shower.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
+import 'package:dictionary_app/services/word/providers/full_word_control.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_word_part_specification.dart';
 import 'package:dictionary_app/widgets/helper_widgets/go_back_panel.dart';
@@ -77,8 +80,11 @@ class TargetWordCreationPage extends HookConsumerWidget
   }
 
   /// Create word
-  void create(WordCreationRequest wordCreationRequest,
-      ValueNotifier<String> error, WidgetRef ref) {
+  void create(
+      WordCreationRequest wordCreationRequest,
+      LanguageDomainObject targetLanguage,
+      ValueNotifier<String> error,
+      WidgetRef ref) async {
     // validate creation request
     String validationResult = validate(wordCreationRequest);
 
@@ -88,9 +94,16 @@ class TargetWordCreationPage extends HookConsumerWidget
     }
 
     try {
-      // TODO: Create word
+      // Create word
+      var wordCreationResult = await (ref
+          .read(fullWordControlProvider(searchString ?? "%%", targetLanguage,
+                  pageDetails: pageDetails ??
+                      const ApiPageDetails(sortFields: [ApiSort(name: "name")]))
+              .notifier)
+          .createWord(wordCreationRequest));
 
       // Alert listeners
+      onSubmit.call(wordCreationResult.word);
     } on ApiError catch (e, stackTrace) {
       String message = e.generateCompiledErrorMessages();
       error.value =
@@ -104,7 +117,7 @@ class TargetWordCreationPage extends HookConsumerWidget
   Widget build(BuildContext context, WidgetRef ref) {
     var translationContext = ref.watch(translationContextControlProvider);
     var creationRequest = useState(WordCreationRequest(
-        translationContext: translationContext.value!, parts: []));
+        translationContext: translationContext.value!.swap(), parts: []));
 
     var error = useState("");
 
@@ -127,7 +140,7 @@ class TargetWordCreationPage extends HookConsumerWidget
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10).copyWith(top: 30),
                 child: Text(
-                  "Create translation in ${translationContext.value?.target.name}",
+                  "Create translation in ${creationRequest.value.translationContext.source.name}",
                   style: Theme.of(context)
                       .textTheme
                       .headlineMedium
@@ -213,8 +226,8 @@ class TargetWordCreationPage extends HookConsumerWidget
                           .copyWith(top: 20, bottom: 40),
                       child: RoundedRectangleTextButton(
                         text: "Create",
-                        onPressed: () =>
-                            create(creationRequest.value, error, ref),
+                        onPressed: () => create(creationRequest.value,
+                            translationContext.value!.target, error, ref),
                       )),
                 )
               ])

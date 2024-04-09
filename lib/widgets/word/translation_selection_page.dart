@@ -42,12 +42,13 @@ class TranslationSelectionPage extends HookConsumerWidget
 
   void goToTargetWordCreationPage(
       ValueNotifier<ApiPageDetails> currentPageDetails,
-      ValueNotifier<String> searchString) {
+      ValueNotifier<String> searchString,
+      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages) {
     // Go to word creation page
     router().push("/target_word_creation", extra: <String, dynamic>{
       "on_submit": (word) {
-        addWord(word);
         router().pop();
+        addWord(word, currentPageDetails, searchString, pages);
       },
       "on_cancel": () => router().pop(),
       "search_string": processSearchString(searchString.value),
@@ -55,8 +56,28 @@ class TranslationSelectionPage extends HookConsumerWidget
     });
   }
 
-  void addWord(FullWordPart word) {
-    // TODO: Implement Add word function
+  void addWord(
+      FullWordPart word,
+      ValueNotifier<ApiPageDetails> currentPageDetails,
+      ValueNotifier<String> searchString,
+      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages) {
+    // Search for word exactly
+    search(word.word.name, searchString, pages, currentPageDetails);
+  }
+
+  ApiPageDetails getFirstPageDetails() {
+    return const ApiPageDetails(sortFields: [ApiSort(name: "name")]);
+  }
+
+  /// Clear page and start new search
+  void search(
+      String newSearchStringValue,
+      ValueNotifier<String> searchString,
+      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
+      ValueNotifier<ApiPageDetails> currentPageDetails) {
+    pages.value.clear();
+    currentPageDetails.value = getFirstPageDetails();
+    searchString.value = newSearchStringValue;
   }
 
   @override
@@ -79,8 +100,7 @@ class TranslationSelectionPage extends HookConsumerWidget
       );
     }
 
-    var currentPageDetails =
-        useState(const ApiPageDetails(sortFields: [ApiSort(name: "name")]));
+    var currentPageDetails = useState(getFirstPageDetails());
 
     var lastFetchedPage = ref.watch(fullWordControlProvider(
         processSearchString(searchString.value),
@@ -88,8 +108,6 @@ class TranslationSelectionPage extends HookConsumerWidget
         pageDetails: currentPageDetails.value));
 
     var pages = useState(<int, ApiPage<FullWordPart>>{});
-
-    var translationOptions = PaginationHelper().flattenPageMap(pages.value);
 
     // Scrollable list controllers and listeners
     final itemScrollController = useState(ItemScrollController());
@@ -103,11 +121,13 @@ class TranslationSelectionPage extends HookConsumerWidget
       pages.value[newPageNumber] = lastFetchedPage.value!;
     }
 
+    var translationOptions = PaginationHelper().flattenPageMap(pages.value);
+
     return Material(
         child: Scaffold(
       floatingActionButton: FloatingActionButton.large(
         onPressed: () =>
-            goToTargetWordCreationPage(currentPageDetails, searchString),
+            goToTargetWordCreationPage(currentPageDetails, searchString, pages),
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -141,7 +161,8 @@ class TranslationSelectionPage extends HookConsumerWidget
                 Padding(
                     padding: EdgeInsets.only(bottom: 20),
                     child: SearchBoxWidget(
-                        onSearchRequested: (val) => searchString.value = val)),
+                        onSearchRequested: (val) => search(
+                            val, searchString, pages, currentPageDetails))),
                 if (lastFetchedPage.isLoading && translationOptions.isEmpty)
                   // INITIAL SEARCH LOADING
                   const Expanded(

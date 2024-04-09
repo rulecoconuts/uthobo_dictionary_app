@@ -14,16 +14,15 @@ WordCreationResult _$WordCreationResultFromJson(Map<String, dynamic> json) =>
           .map((e) =>
               PronunciationPresignResult.fromJson(e as Map<String, dynamic>))
           .toList(),
-      translationDomainObject:
-          (json['translationDomainObject'] as List<dynamic>)
-              .map((e) =>
-                  TranslationDomainObject.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      translations: (json['translations'] as List<dynamic>)
+          .map((e) =>
+              TranslationDomainObject.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$WordCreationResultToJson(WordCreationResult instance) =>
     <String, dynamic>{
       'word': instance.word,
       'pronunciationPresignResults': instance.pronunciationPresignResults,
-      'translationDomainObject': instance.translationDomainObject,
+      'translations': instance.translations,
     };

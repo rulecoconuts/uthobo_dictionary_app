@@ -117,6 +117,9 @@ class SimpleWordRESTService
     } on DioException catch (e) {
       handleDioException(e);
       rethrow;
+    } catch (e) {
+      print(e);
+      rethrow;
     }
   }
 }

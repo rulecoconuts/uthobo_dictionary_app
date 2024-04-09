@@ -1,6 +1,5 @@
 import 'package:dictionary_app/services/pronunciation/pronunciation_presign_result.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_upload_status.dart';
-import 'package:dictionary_app/services/pronunciation/upload_stage.dart';
 
 abstract class PronunciationUploadScheduler {
   Future schedule(PronunciationPresignResult pronunciationPresignResult);
