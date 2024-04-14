@@ -256,13 +256,14 @@ class WordCreationPartWidget extends HookConsumerWidget
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text(
-                        "Translations",
-                        style: Theme.of(context).textTheme.titleSmall,
+                    if (wordPartSpecification.value.translations.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Text(
+                          "Translations",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
-                    ),
                     ...wordPartSpecification.value.translations.map(
                       (e) => Padding(
                           padding: EdgeInsets.only(bottom: 10),

@@ -31,6 +31,7 @@ class SearchBoxWidget extends HookWidget {
       };
 
       textEditController.value.addListener(onTextEditted);
+      textEditController.value.text = initialSearchString ?? "";
 
       return () => textEditController.value.removeListener(onTextEditted);
     }, [textEditController.value]);
@@ -39,7 +40,6 @@ class SearchBoxWidget extends HookWidget {
       controller: textEditController.value,
       textInputAction: TextInputAction.search,
       onFieldSubmitted: search,
-      initialValue: initialSearchString,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.search),
           suffixIcon: showCancelWidget.value
