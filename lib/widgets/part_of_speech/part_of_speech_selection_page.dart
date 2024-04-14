@@ -2,6 +2,7 @@ import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/pagination/api_sort.dart';
+import 'package:dictionary_app/services/pagination/pagination_helper.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/part_of_speech/providers/part_of_speech_control.dart';
 import 'package:dictionary_app/services/part_of_speech/providers/part_of_speech_creation_context.dart';
@@ -26,10 +27,6 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
   const PartOfSpeechSelectionPage(
       {required this.onSelectionSubmitted, required this.onCancel, Key? key})
       : super(key: key);
-
-  String processSearchString(String name) {
-    return "%$name%";
-  }
 
   /// Fetch data on next page
   Future fetchNextPage(
@@ -99,7 +96,8 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     ValueNotifier<Map<int, ApiPage<PartOfSpeechDomainObject>>> pages,
   ) {
     router().push("/part_of_speech_creation", extra: <String, dynamic>{
-      "previous_search_string": processSearchString(searchString.value),
+      "previous_search_string":
+          PaginationHelper().sanitizeSearchString(searchString.value),
       "previous_page_details": currentPageDetails.value,
       "on_submit": (PartOfSpeechDomainObject newPart) {
         router().pop();
@@ -152,7 +150,7 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
       nextDataSubscription = ref
           .listenManual<AsyncValue<ApiPage<PartOfSpeechDomainObject>>>(
               partOfSpeechControlProvider(
-                  processSearchString(searchString.value),
+                  PaginationHelper().sanitizeSearchString(searchString.value),
                   pageDetails: currentPageDetails.value), (prev, current) {
         if (current.hasValue) {
           // Next page has loaded. Attempt to scroll to new part if it exists
@@ -198,7 +196,7 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     var pages = useState(<int, ApiPage<PartOfSpeechDomainObject>>{});
     var currentPageDetails = useState(getFirstPageDetails());
     var lastFetchedPage = ref.watch(partOfSpeechControlProvider(
-        processSearchString(searchString.value),
+        PaginationHelper().sanitizeSearchString(searchString.value),
         pageDetails: currentPageDetails.value));
 
     var selectedPart = useState<PartOfSpeechDomainObject?>(null);

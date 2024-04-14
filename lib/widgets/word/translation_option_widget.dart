@@ -22,7 +22,7 @@ class TranslationOptionWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool containsPart = wordPart.parts.any((pair) => pair.part == desiredPart);
+    bool containsPart = wordPart.containsPart(desiredPart);
 
     return InkWell(
         onTap: () => onClicked(containsPart),
@@ -33,7 +33,10 @@ class TranslationOptionWidget extends HookWidget {
             children: [
               Text(
                 wordPart.word.name,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(color: isSelected ? Colors.white : Colors.black),
               ),
               if (!containsPart)
                 Padding(

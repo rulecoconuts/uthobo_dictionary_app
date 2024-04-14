@@ -6,6 +6,7 @@ import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/pagination/api_sort.dart';
 import 'package:dictionary_app/services/pagination/pagination_helper.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
+import 'package:dictionary_app/services/toast/toast_shower.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/providers/full_word_control.dart';
 import 'package:dictionary_app/services/word/word_domain_object.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:flutter/cupertino.dart' as cup;
 
 class TranslationSelectionPage extends HookConsumerWidget
     with RoutingUtilsAccessor {
@@ -36,22 +38,21 @@ class TranslationSelectionPage extends HookConsumerWidget
       Key? key})
       : super(key: key);
 
-  String processSearchString(String searchString) {
-    return "%$searchString%";
-  }
-
   void goToTargetWordCreationPage(
       ValueNotifier<ApiPageDetails> currentPageDetails,
       ValueNotifier<String> searchString,
-      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages) {
+      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
+      ValueNotifier<FullWordPart?> selectedTranslation) {
     // Go to word creation page
     router().push("/target_word_creation", extra: <String, dynamic>{
       "on_submit": (word) {
         router().pop();
-        addWord(word, currentPageDetails, searchString, pages);
+        addWord(
+            word, currentPageDetails, searchString, pages, selectedTranslation);
       },
       "on_cancel": () => router().pop(),
-      "search_string": processSearchString(searchString.value),
+      "search_string":
+          PaginationHelper().sanitizeSearchString(searchString.value),
       "page_details": currentPageDetails.value
     });
   }
@@ -60,13 +61,74 @@ class TranslationSelectionPage extends HookConsumerWidget
       FullWordPart word,
       ValueNotifier<ApiPageDetails> currentPageDetails,
       ValueNotifier<String> searchString,
-      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages) {
+      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
+      ValueNotifier<FullWordPart?> selectedTranslation) {
     // Search for word exactly
     search(word.word.name, searchString, pages, currentPageDetails);
+    if (word.containsPart(part)) {
+      selectedTranslation.value = word;
+    }
   }
 
   ApiPageDetails getFirstPageDetails() {
     return const ApiPageDetails(sortFields: [ApiSort(name: "name")]);
+  }
+
+  void save(ValueNotifier<FullWordPart?> selectedTranslation) {
+    if (selectedTranslation.value == null) {
+      ToastShower().showToast("No translation selected");
+      return;
+    }
+
+    onSubmit(selectedTranslation.value!);
+  }
+
+  void goToEditWordPage(
+    ValueNotifier<FullWordPart?> selectedTranslation,
+    ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
+  ) {}
+
+  void showWordWithoutRequiredPartWarning(
+    BuildContext context,
+    FullWordPart fullWordPart,
+    ValueNotifier<FullWordPart?> selectedTranslation,
+    ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
+  ) {
+    showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return cup.CupertinoAlertDialog(
+            title: Text(
+              "Word is not a ${part.name}. Change that?",
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            actions: [
+              cup.CupertinoDialogAction(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                isDefaultAction: true,
+                child: Text("No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.red)),
+              ),
+              cup.CupertinoDialogAction(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  // Go to edit page for word
+                  goToEditWordPage(selectedTranslation, pages);
+                },
+                child: Text("Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.blue)),
+              )
+            ],
+          );
+        });
   }
 
   /// Clear page and start new search
@@ -103,7 +165,7 @@ class TranslationSelectionPage extends HookConsumerWidget
     var currentPageDetails = useState(getFirstPageDetails());
 
     var lastFetchedPage = ref.watch(fullWordControlProvider(
-        processSearchString(searchString.value),
+        PaginationHelper().sanitizeSearchString(searchString.value),
         translationContext.value!.target,
         pageDetails: currentPageDetails.value));
 
@@ -114,6 +176,8 @@ class TranslationSelectionPage extends HookConsumerWidget
     final itemPositionsListener = useState(ItemPositionsListener.create());
     final scrollOffsetController = useState(ScrollOffsetController());
     final scrollOffsetListener = useState(ScrollOffsetListener.create());
+
+    final selectedTranslation = useState<FullWordPart?>(null);
 
     if (lastFetchedPage.hasValue) {
       // Add newly added page to page map
@@ -126,8 +190,8 @@ class TranslationSelectionPage extends HookConsumerWidget
     return Material(
         child: Scaffold(
       floatingActionButton: FloatingActionButton.large(
-        onPressed: () =>
-            goToTargetWordCreationPage(currentPageDetails, searchString, pages),
+        onPressed: () => goToTargetWordCreationPage(
+            currentPageDetails, searchString, pages, selectedTranslation),
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -189,14 +253,27 @@ class TranslationSelectionPage extends HookConsumerWidget
                             return TranslationOptionWidget(
                               wordPart: option,
                               desiredPart: part,
-                              onClicked: (containsPart) {},
+                              isSelected: selectedTranslation.value == option,
+                              onClicked: (containsPart) {
+                                if (containsPart) {
+                                  selectedTranslation.value = option;
+                                } else {
+                                  showWordWithoutRequiredPartWarning(context,
+                                      option, selectedTranslation, pages);
+                                }
+                              },
                             );
                           },
-                          separatorBuilder: (ctx, index) =>
-                              const Padding(padding: EdgeInsets.only(top: 20))))
+                          separatorBuilder: (ctx, index) => const Padding(
+                              padding: EdgeInsets.only(top: 20)))),
               ],
             ),
-          ))
+          )),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10)
+                  .copyWith(bottom: 40, top: 10),
+              child: RoundedRectangleTextButton(
+                  text: "Save", onPressed: () => save(selectedTranslation)))
         ],
       ),
     ));

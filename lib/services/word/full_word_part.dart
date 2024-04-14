@@ -1,5 +1,7 @@
+import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/word/part_word_part_pair.dart';
 import 'package:dictionary_app/services/word/word_domain_object.dart';
+import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'full_word_part.g.dart';
@@ -15,4 +17,19 @@ class FullWordPart {
 
   factory FullWordPart.fromJson(Map<String, dynamic> json) =>
       _$FullWordPartFromJson(json);
+
+  bool containsPart(PartOfSpeechDomainObject part) {
+    return parts.any((pair) => pair.part == part);
+  }
+
+  @override
+  int get hashCode => Object.hash(word, null);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is FullWordPart && hashCode == other.hashCode;
+
+  WordPartDomainObject? getWordPart(PartOfSpeechDomainObject part) {
+    return parts.where((element) => element.part == part).firstOrNull?.wordPart;
+  }
 }

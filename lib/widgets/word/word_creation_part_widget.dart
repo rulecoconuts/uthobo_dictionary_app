@@ -11,6 +11,7 @@ import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_add_button.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_icon_button.dart';
 import 'package:dictionary_app/widgets/pronunciation/pronunciation_creation_request_display.dart';
+import 'package:dictionary_app/widgets/word/translation_specification_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -85,7 +86,7 @@ class WordCreationPartWidget extends HookConsumerWidget
       "part": wordCreationWordPartSpecification.value.part,
       "word": creationRequest.name,
       "on_submit": (translation) {
-        addTranslation(translation);
+        addTranslation(wordCreationWordPartSpecification, translation);
         router().pop();
       },
       "on_cancel": () {
@@ -94,7 +95,46 @@ class WordCreationPartWidget extends HookConsumerWidget
     });
   }
 
-  void addTranslation(FullWordPart translation) {}
+  void addTranslation(
+      ValueNotifier<WordCreationWordPartSpecification>
+          wordCreationWordPartSpecification,
+      FullWordPart word) {
+    var wordPart =
+        word.getWordPart(wordCreationWordPartSpecification.value.part);
+
+    // If word part is null, then word does not have an instance for the desired
+    // part of speech. Make sure that any instances for that word are removed
+    // from this widget
+
+    if (wordPart == null) {
+      var translationForWord = wordCreationWordPartSpecification.value
+          .getTranslationByWord(word.word);
+
+      if (translationForWord != null) {
+        wordCreationWordPartSpecification.value
+            .removeTranslation(translationForWord);
+      }
+
+      // Redraw widget
+      wordCreationWordPartSpecification.value =
+          wordCreationWordPartSpecification.value;
+    } else {
+      // Word has an instance for desired part of speech.
+      var matchingTranslationSpec = wordCreationWordPartSpecification.value
+          .getTranslationByWordPart(wordPart);
+
+      if (matchingTranslationSpec == null) {
+        // Translation does not exist in word creation spec.
+        // Add it
+        wordCreationWordPartSpecification.value.addTranslation(
+            WordCreationTranslationSpecification(
+                wordPart: wordPart, word: word));
+      }
+      // Redraw widget
+      wordCreationWordPartSpecification.value =
+          wordCreationWordPartSpecification.value;
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -102,6 +142,7 @@ class WordCreationPartWidget extends HookConsumerWidget
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // PART NAME DISPLAY
         Padding(
           padding: EdgeInsets.only(bottom: 5),
           child: RoundedRectangleTextTag(
@@ -212,12 +253,30 @@ class WordCreationPartWidget extends HookConsumerWidget
                         wordPartSpecification, null))
               ]),
               if (isSourceWord)
-                Row(children: [
-                  RoundedRectangleTextTagAddButton(
-                      text: "Add translation",
-                      onClicked: () =>
-                          goToTranslationSelectionPage(wordPartSpecification))
-                ])
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Text(
+                        "Translations",
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                    ...wordPartSpecification.value.translations.map(
+                      (e) => Padding(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child:
+                              TranslationSpecificationWidget(translation: e)),
+                    ),
+                    Row(children: [
+                      RoundedRectangleTextTagAddButton(
+                          text: "Add translation",
+                          onClicked: () => goToTranslationSelectionPage(
+                              wordPartSpecification))
+                    ])
+                  ],
+                )
             ]
                 .separator(() => Padding(padding: EdgeInsets.only(top: 10)))
                 .toList(),

@@ -23,6 +23,7 @@ class WordRouteListGenerator extends RouteListGenerator {
                 : <String, dynamic>{};
             return SourceWordCreationPage(
               searchString: args["search"],
+              onSubmit: args["on_submit"],
             );
           }),
       GoRoute(

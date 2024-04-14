@@ -2,8 +2,13 @@ import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/form/form_helper.dart';
 import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
+import 'package:dictionary_app/services/pagination/api_page_details.dart';
+import 'package:dictionary_app/services/pagination/api_sort.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
+import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/toast/toast_shower.dart';
+import 'package:dictionary_app/services/word/full_word_part.dart';
+import 'package:dictionary_app/services/word/providers/full_word_control.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_word_part_specification.dart';
 import 'package:dictionary_app/widgets/helper_widgets/go_back_panel.dart';
@@ -19,7 +24,10 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class SourceWordCreationPage extends HookConsumerWidget
     with RoutingUtilsAccessor {
   final String? searchString;
-  const SourceWordCreationPage({Key? key, this.searchString}) : super(key: key);
+  final Function(FullWordPart) onSubmit;
+  const SourceWordCreationPage(
+      {Key? key, required this.onSubmit, this.searchString})
+      : super(key: key);
 
   void goToPartOfSpeechCreation(
       ValueNotifier<WordCreationRequest> creationRequest) async {
@@ -32,6 +40,47 @@ class SourceWordCreationPage extends HookConsumerWidget
         router().pop();
       }
     });
+  }
+
+  String validate(WordCreationRequest wordCreationRequest) {
+    List<String> errors = [];
+    if (wordCreationRequest.name.isEmpty) errors.add("Name cannot be blank");
+    if (wordCreationRequest.parts.isEmpty) {
+      errors.add("At least one part of speech is required");
+    }
+    return errors.join("\n");
+  }
+
+  /// Create word
+  void create(WordCreationRequest wordCreationRequest,
+      ValueNotifier<String> error, WidgetRef ref) async {
+    // validate creation request
+    String validationResult = validate(wordCreationRequest);
+
+    if (validationResult.isNotEmpty) {
+      error.value = validationResult;
+      return;
+    }
+
+    try {
+      // Create word
+      var wordCreationResult = await (ref
+          .read(fullWordControlProvider(searchString ?? "%%",
+                  wordCreationRequest.translationContext.source,
+                  pageDetails:
+                      const ApiPageDetails(sortFields: [ApiSort(name: "name")]))
+              .notifier)
+          .createWord(wordCreationRequest));
+
+      // Alert listeners
+      onSubmit.call(wordCreationResult.word);
+    } on ApiError catch (e, stackTrace) {
+      String message = e.generateCompiledErrorMessages();
+      error.value =
+          message.isNotEmpty ? message : e.message ?? "Something went wrong";
+    } catch (e, stackTrace) {
+      error.value = "Something went wrong";
+    }
   }
 
   void addPartOfSpeech(PartOfSpeechDomainObject newPart,
@@ -54,6 +103,8 @@ class SourceWordCreationPage extends HookConsumerWidget
     var translationContext = ref.watch(translationContextControlProvider);
     var creationRequest = useState(WordCreationRequest(
         translationContext: translationContext.value!, parts: []));
+
+    var error = useState("");
 
     if (translationContext.isLoading) return Container();
 
@@ -135,6 +186,19 @@ class SourceWordCreationPage extends HookConsumerWidget
                               },
                             ),
                           ),
+                          // SHOW ERROR LABEL IF IT IS NOT EMPTY
+                          if (error.value.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(top: 30),
+                              child: Text(
+                                error.value,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: Colors.red),
+                              ),
+                            ),
                         ],
                       ))),
               Row(children: [
@@ -144,7 +208,8 @@ class SourceWordCreationPage extends HookConsumerWidget
                           .copyWith(top: 20, bottom: 40),
                       child: RoundedRectangleTextButton(
                         text: "Create",
-                        onPressed: () {},
+                        onPressed: () =>
+                            create(creationRequest.value, error, ref),
                       )),
                 )
               ])

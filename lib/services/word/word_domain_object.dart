@@ -39,4 +39,12 @@ class WordDomainObject implements TemporalAuditable, UserAuditable {
 
   factory WordDomainObject.fromJson(Map<String, dynamic> json) =>
       _$WordDomainObjectFromJson(json);
+
+  @override
+  int get hashCode =>
+      (id ?? 0) > 0 ? Object.hash(id, null) : Object.hash(name, languageId);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is WordDomainObject && hashCode == other.hashCode;
 }

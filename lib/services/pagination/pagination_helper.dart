@@ -50,4 +50,9 @@ class PaginationHelper {
       task();
     }
   }
+
+  /// sanitize a raw search string so that it can be sent to the backend
+  String sanitizeSearchString(String searchString) {
+    return "%$searchString%";
+  }
 }
