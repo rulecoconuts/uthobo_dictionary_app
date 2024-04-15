@@ -1,6 +1,7 @@
 import 'package:dictionary_app/config/routing/route_list_generator.dart';
 import 'package:dictionary_app/widgets/pronunciation/pronunciation_creation_page.dart';
 import 'package:dictionary_app/widgets/word/source_word_creation_page.dart';
+import 'package:dictionary_app/widgets/word/source_word_view_page.dart';
 import 'package:dictionary_app/widgets/word/target_word_creation_page.dart';
 import 'package:dictionary_app/widgets/word/word_list_page.dart';
 import 'package:go_router/src/route.dart';
@@ -38,7 +39,14 @@ class WordRouteListGenerator extends RouteListGenerator {
             onCancel: args["on_cancel"],
           );
         },
-      )
+      ),
+      GoRoute(
+          path: "/source_word_view",
+          builder: (context, state) {
+            var args = state.extra as Map<String, dynamic>;
+
+            return SourceWordViewPage(fullWord: args["full_word"]);
+          })
     ];
   }
 }

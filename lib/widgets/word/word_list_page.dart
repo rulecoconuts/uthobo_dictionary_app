@@ -66,6 +66,11 @@ class WordListPage extends HookConsumerWidget with RoutingUtilsAccessor {
     return 2;
   }
 
+  void goToWordViewPage(FullWordPart word) {
+    router()
+        .push("/source_word_view", extra: <String, dynamic>{"full_word": word});
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var searchVal = useState("");
@@ -174,6 +179,7 @@ class WordListPage extends HookConsumerWidget with RoutingUtilsAccessor {
                                 itemBuilder: (context, index) {
                                   var word = words[index];
                                   return InkWell(
+                                    onTap: () => goToWordViewPage(word),
                                     child: RoundedRectangleTextCard(
                                         text: word.word.name),
                                   );
