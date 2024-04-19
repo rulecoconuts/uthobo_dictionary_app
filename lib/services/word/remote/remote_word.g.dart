@@ -1,13 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'word_domain_object.dart';
+part of 'remote_word.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-WordDomainObject _$WordDomainObjectFromJson(Map<String, dynamic> json) =>
-    WordDomainObject(
+RemoteWord _$RemoteWordFromJson(Map<String, dynamic> json) => RemoteWord(
       id: json['id'] as int?,
       name: json['name'] as String,
       languageId: json['languageId'] as int,
@@ -17,7 +16,7 @@ WordDomainObject _$WordDomainObjectFromJson(Map<String, dynamic> json) =>
       updatedBy: json['updatedBy'] as int?,
     );
 
-Map<String, dynamic> _$WordDomainObjectToJson(WordDomainObject instance) =>
+Map<String, dynamic> _$RemoteWordToJson(RemoteWord instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

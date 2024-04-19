@@ -13,6 +13,10 @@ class EditableTextView extends HookWidget {
   final InputDecoration inputDecoration;
   final TextAlign textAlign;
   final double iconSize;
+  final int? minLines;
+  final int? maxLines;
+  final int? maxLength;
+
   const EditableTextView(
       {this.initial,
       this.label,
@@ -24,6 +28,9 @@ class EditableTextView extends HookWidget {
       this.textAlign = TextAlign.start,
       this.textStyle,
       this.iconSize = 25,
+      this.minLines,
+      this.maxLines,
+      this.maxLength,
       super.key});
 
   Widget generateEditIcon(BuildContext context) {
@@ -105,6 +112,9 @@ class EditableTextView extends HookWidget {
                 style: textBoxStyle ?? textStyle,
                 decoration: inputDecoration,
                 textAlign: textAlign,
+                minLines: minLines,
+                maxLength: maxLength,
+                maxLines: maxLines,
               ),
               Padding(
                   padding:

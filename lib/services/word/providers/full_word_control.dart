@@ -7,6 +7,7 @@ import 'package:dictionary_app/services/provider_commons/cache_for_extension.dar
 import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_result.dart';
+import 'package:dictionary_app/services/word/word_domain_object.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'full_word_control.g.dart';
@@ -41,5 +42,10 @@ class FullWordControl extends _$FullWordControl
     ref.invalidateSelf();
 
     return result;
+  }
+
+  /// Update the properties of a word domain obejct
+  Future<WordDomainObject> updateWordDomainObject(WordDomainObject word) async {
+    return (await wordDomainService()).update(word);
   }
 }

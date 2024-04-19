@@ -4,6 +4,9 @@ import 'package:dictionary_app/services/auth/login/login_service.dart';
 import 'package:dictionary_app/services/auth/login/login_service_auth_storage_auth_backed_web_service_mixin.dart';
 import 'package:dictionary_app/services/auth/login/web_service_mixin.dart';
 import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
+import 'package:dictionary_app/services/foundation/creation_service.dart';
+import 'package:dictionary_app/services/foundation/delete_service.dart';
+import 'package:dictionary_app/services/foundation/update_service.dart';
 import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
@@ -12,6 +15,7 @@ import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/server/server_details.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
+import 'package:dictionary_app/services/word/remote/remote_word.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_result.dart';
 import 'package:dictionary_app/services/word/word_service.dart';
@@ -21,7 +25,11 @@ class SimpleWordRESTService
     with
         AuthBackedWebServiceMixin,
         JwtAuthBackedServiceMixin,
-        LoginServiceAuthStorageAuthBackedWebServiceMixin {
+        LoginServiceAuthStorageAuthBackedWebServiceMixin,
+        CreationService<RemoteWord>,
+        UpdateService<RemoteWord>,
+        DeletionService<RemoteWord>,
+        SimpleDioBackedRESTServiceMixin<RemoteWord> {
   AuthStorage authStorage;
 
   LoginService loginService;
@@ -81,14 +89,14 @@ class SimpleWordRESTService
     }
   }
 
-  void handleDioException(DioException e) {
-    if (e.type == DioExceptionType.badResponse) {
-      if (e.response?.data is! Map) throw e;
-      throw serializationUtils.deserialize<ApiError>(e.response!.data);
-    }
+  // void handleDioException(DioException e) {
+  //   if (e.type == DioExceptionType.badResponse) {
+  //     if (e.response?.data is! Map) throw e;
+  //     throw serializationUtils.deserialize<ApiError>(e.response!.data);
+  //   }
 
-    throw e;
-  }
+  //   throw e;
+  // }
 
   @override
   Future<AuthStorage> getAuthStorage() async {
@@ -121,5 +129,20 @@ class SimpleWordRESTService
       print(e);
       rethrow;
     }
+  }
+
+  @override
+  Dio getDio() {
+    return dio;
+  }
+
+  @override
+  String getEndpoint() {
+    return "${serverDetails.url}/words";
+  }
+
+  @override
+  SerializationUtils getSerializationUtils() {
+    return serializationUtils;
   }
 }

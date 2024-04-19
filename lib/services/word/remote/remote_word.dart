@@ -1,12 +1,13 @@
 import 'package:dictionary_app/services/auditable/temporal_audtiable.dart';
 import 'package:dictionary_app/services/auditable/user_auditable.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
+import 'package:dictionary_app/services/word/word_domain_object.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'word_domain_object.g.dart';
+part 'remote_word.g.dart';
 
 @JsonSerializable()
-class WordDomainObject implements TemporalAuditable, UserAuditable {
+class RemoteWord implements TemporalAuditable, UserAuditable {
   int? id;
   String name;
   int languageId;
@@ -29,7 +30,7 @@ class WordDomainObject implements TemporalAuditable, UserAuditable {
   @override
   int? updatedBy;
 
-  WordDomainObject(
+  RemoteWord(
       {this.id,
       required this.name,
       required this.languageId,
@@ -38,10 +39,10 @@ class WordDomainObject implements TemporalAuditable, UserAuditable {
       this.createdBy,
       this.updatedBy});
 
-  Map<String, dynamic> toJson() => _$WordDomainObjectToJson(this);
+  Map<String, dynamic> toJson() => _$RemoteWordToJson(this);
 
-  factory WordDomainObject.fromJson(Map<String, dynamic> json) =>
-      _$WordDomainObjectFromJson(json);
+  factory RemoteWord.fromJson(Map<String, dynamic> json) =>
+      _$RemoteWordFromJson(json);
 
   @override
   int get hashCode =>
@@ -49,25 +50,27 @@ class WordDomainObject implements TemporalAuditable, UserAuditable {
 
   @override
   bool operator ==(dynamic other) =>
-      other is WordDomainObject && hashCode == other.hashCode;
+      other is RemoteWord && hashCode == other.hashCode;
 
-  WordDomainObject copyWith(
-      {int? id,
-      String? name,
-      int? languageId,
-      DateTime? createdAt,
-      DateTime? updatedAt,
-      int? createdBy,
-      int? updatedBy}) {
-    WordDomainObject newWord = WordDomainObject(
-        name: name ?? this.name,
-        languageId: languageId ?? this.languageId,
-        id: id ?? this.id,
-        createdAt: createdAt ?? this.createdAt,
-        createdBy: createdBy ?? this.createdBy,
-        updatedAt: updatedAt ?? this.updatedAt,
-        updatedBy: updatedBy ?? this.updatedBy);
+  WordDomainObject toDomain() {
+    return WordDomainObject(
+        name: name,
+        languageId: languageId,
+        id: id,
+        createdAt: createdAt,
+        createdBy: createdBy,
+        updatedAt: updatedAt,
+        updatedBy: updatedBy);
+  }
 
-    return newWord;
+  factory RemoteWord.fromDomain(WordDomainObject domain) {
+    return RemoteWord(
+        name: domain.name,
+        languageId: domain.languageId,
+        id: domain.id,
+        createdAt: domain.createdAt,
+        createdBy: domain.createdBy,
+        updatedAt: domain.updatedAt,
+        updatedBy: domain.updatedBy);
   }
 }
