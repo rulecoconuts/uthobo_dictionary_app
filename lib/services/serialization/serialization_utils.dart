@@ -58,6 +58,10 @@ class SerializationUtils {
     return "$val";
   }
 
+  static String forceDeserializeToString(dynamic rawVal) {
+    return "$rawVal";
+  }
+
   T Function(Map<String, dynamic> jsonMap) getDeserializer<T>() {
     return _deserializers[T] as T Function(Map<String, dynamic>);
   }

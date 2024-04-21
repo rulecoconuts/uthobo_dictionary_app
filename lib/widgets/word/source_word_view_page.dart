@@ -65,7 +65,7 @@ class SourceWordViewPage extends HookConsumerWidget with RoutingUtilsAccessor {
                   child: EditableTextView(
                       initial: wordNotif.value.word.name,
                       onEdit: (newName) async {
-                        // TODO: Save new name
+                        // Save new name
                         String? error = await updateWord(
                             wordNotif.value.word.copyWith(name: newName), ref);
                         if (error != null) return error;

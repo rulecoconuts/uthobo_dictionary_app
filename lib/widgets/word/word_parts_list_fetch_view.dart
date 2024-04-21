@@ -32,6 +32,7 @@ class WordPartsListFetchView extends HookConsumerWidget
     var wordNotif = useState(fullWord);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // TODD: Display Parts
         ...wordNotif.value.parts.map((pair) => WordPartView(

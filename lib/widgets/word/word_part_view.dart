@@ -1,6 +1,9 @@
+import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
+import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/part_word_part_pair.dart';
+import 'package:dictionary_app/services/word/providers/full_word_control.dart';
 import 'package:dictionary_app/services/word/word_domain_object.dart';
 import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag.dart';
@@ -17,6 +20,25 @@ class WordPartView extends HookConsumerWidget {
   final WordDomainObject word;
   const WordPartView(
       {required this.partWordPair, required this.word, super.key});
+
+  Future<String?> updateWordPart(
+      WordPartDomainObject wordPart, WidgetRef ref) async {
+    try {
+      WordPartDomainObject newWordPart = await ref
+          .read(fullWordControlProvider(
+                  "%%", LanguageDomainObject(name: "", id: word.id))
+              .notifier)
+          .updateWordPart(wordPart);
+    } on ApiError catch (e, stackTrace) {
+      String error = e.generateCompiledErrorMessages();
+
+      if (error.isEmpty) return e.message ?? e.debugMessage ?? e.status;
+
+      return error;
+    } catch (e, stackTracee) {
+      return "$e";
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +80,15 @@ class WordPartView extends HookConsumerWidget {
                               ?.copyWith(
                                   fontSize: 15, fontWeight: FontWeight.w400)),
                       onEdit: (newDefinition) async {
-                        // TODO: Update word part with new definition
+                        // Update word part with new definition
+                        var error = await updateWordPart(
+                            pairNotif.value.wordPart
+                                .copyWith(definition: newDefinition),
+                            ref);
+                        if (error != null) return error;
+
+                        pairNotif.value.wordPart.definition = newDefinition;
+                        pairNotif.notifyListeners();
                         return null;
                       }),
                 ),
@@ -82,6 +112,7 @@ class WordPartView extends HookConsumerWidget {
                         maxLines: 100,
                         maxLength: 7200,
                         initial: pairNotif.value.wordPart.note,
+                        label: "Note",
                         inputDecoration: InputDecoration(
                             hintText: "Enter note",
                             hintStyle: Theme.of(context)
@@ -90,7 +121,14 @@ class WordPartView extends HookConsumerWidget {
                                 ?.copyWith(
                                     fontSize: 15, fontWeight: FontWeight.w400)),
                         onEdit: (newNote) async {
-                          // TODO: Update word part with new note
+                          // Update word part with new note
+                          var error = await updateWordPart(
+                              pairNotif.value.wordPart.copyWith(note: newNote),
+                              ref);
+                          if (error != null) return error;
+
+                          pairNotif.value.wordPart.definition = newNote;
+                          pairNotif.notifyListeners();
                           return null;
                         })),
 
@@ -102,7 +140,8 @@ class WordPartView extends HookConsumerWidget {
                 WordPartTranslationFetchList(
                     wordPart: pairNotif.value.wordPart, word: word)
             ]
-                .separator(() => Padding(padding: EdgeInsets.only(top: 10)))
+                .separator(
+                    () => const Padding(padding: EdgeInsets.only(top: 10)))
                 .toList(),
           ),
         )

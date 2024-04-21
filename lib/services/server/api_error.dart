@@ -1,10 +1,12 @@
+import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'api_error.g.dart';
 
 @JsonSerializable()
 class ApiError {
-  final String status;
+  @JsonKey(fromJson: SerializationUtils.forceDeserializeToString)
+  final String? status;
   final DateTime? timestamp;
   final String? message;
   final String? debugMessage;

@@ -44,4 +44,26 @@ class WordPartDomainObject {
 
   factory WordPartDomainObject.fromJson(Map<String, dynamic> json) =>
       _$WordPartDomainObjectFromJson(json);
+
+  WordPartDomainObject copyWith(
+      {int? id,
+      int? wordId,
+      int? partId,
+      String? definition,
+      String? note,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      int? createdBy,
+      int? updatedBy}) {
+    return WordPartDomainObject(
+        wordId: wordId ?? this.wordId,
+        partId: partId ?? this.partId,
+        id: id ?? this.id,
+        definition: definition ?? this.definition,
+        note: note ?? this.note,
+        createdAt: createdAt ?? this.createdAt,
+        createdBy: createdBy ?? this.createdBy,
+        updatedAt: updatedAt ?? this.updatedAt,
+        updatedBy: updatedBy ?? this.updatedBy);
+  }
 }

@@ -8,6 +8,7 @@ import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/word_creation_request_domain_object.dart';
 import 'package:dictionary_app/services/word/word_creation_result.dart';
 import 'package:dictionary_app/services/word/word_domain_object.dart';
+import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'full_word_control.g.dart';
@@ -47,5 +48,10 @@ class FullWordControl extends _$FullWordControl
   /// Update the properties of a word domain obejct
   Future<WordDomainObject> updateWordDomainObject(WordDomainObject word) async {
     return (await wordDomainService()).update(word);
+  }
+
+  Future<WordPartDomainObject> updateWordPart(
+      WordPartDomainObject wordPart) async {
+    return (await wordPartService()).update(wordPart);
   }
 }
