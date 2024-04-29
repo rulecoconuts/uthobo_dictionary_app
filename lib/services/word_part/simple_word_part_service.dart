@@ -1,6 +1,7 @@
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
+import 'package:dictionary_app/services/pronunciation/pronunciation_domain_object.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_backed_domain_service_mixin.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
 import 'package:dictionary_app/services/word_part/remote_word_part.dart';
@@ -33,5 +34,14 @@ class SimpleWordPartService
   @override
   RemoteWordPart toRemote(WordPartDomainObject model) {
     return RemoteWordPart.fromDomain(model);
+  }
+
+  @override
+  Future<List<PronunciationDomainObject>> getPronunciations(
+      WordPartDomainObject wordPart) async {
+    var remote = await wordPartRESTService
+        .getPronunciations(RemoteWordPart.fromDomain(wordPart));
+
+    return remote.map((e) => e.toDomain()).toList();
   }
 }

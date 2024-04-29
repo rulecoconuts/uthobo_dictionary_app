@@ -7,10 +7,14 @@ import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
+import 'package:dictionary_app/services/pronunciation/pronunciation_domain_object.dart';
+import 'package:dictionary_app/services/pronunciation/remote/remote_pronunciation.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:dictionary_app/services/server/server_details.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
 import 'package:dictionary_app/services/word_part/remote_word_part.dart';
+import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
+import 'package:dio/dio.dart';
 import 'package:dio/src/dio.dart';
 
 class WordPartRESTService
@@ -59,5 +63,22 @@ class WordPartRESTService
   @override
   SerializationUtils getSerializationUtils() {
     return serializationUtils;
+  }
+
+  Future<List<RemotePronunciation>> getPronunciations(
+      RemoteWordPart wordPart) async {
+    try {
+      String url = "${getEndpoint()}/${wordPart.id}/pronunciations";
+      var dio = getDio();
+
+      var request = await dio.get(url,
+          options: Options(headers: await generateAuthHeaders()));
+
+      return serializationUtils
+          .deserializeList<RemotePronunciation>(request.data);
+    } on DioException catch (e) {
+      handleDioException(e);
+      rethrow;
+    }
   }
 }
