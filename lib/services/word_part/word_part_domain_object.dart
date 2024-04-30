@@ -45,6 +45,14 @@ class WordPartDomainObject {
   factory WordPartDomainObject.fromJson(Map<String, dynamic> json) =>
       _$WordPartDomainObjectFromJson(json);
 
+  @override
+  int get hashCode =>
+      id != null ? Object.hash(id, null) : Object.hash(wordId, partId);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is WordPartDomainObject && hashCode == other.hashCode;
+
   WordPartDomainObject copyWith(
       {int? id,
       int? wordId,

@@ -16,14 +16,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class PronunciationCreationPage extends HookConsumerWidget
     with PronunciationUtilsAccessor {
-  final WordCreationRequest wordCreationRequest;
+  final String wordName;
   final PartOfSpeechDomainObject part;
   final Function(PronunciationCreationRequest request) onSubmit;
   final void Function()? onCancel;
   final PronunciationCreationRequest? initialPronunciationRequest;
   const PronunciationCreationPage(
       {required this.onSubmit,
-      required this.wordCreationRequest,
+      required this.wordName,
       required this.part,
       this.onCancel,
       this.initialPronunciationRequest,
@@ -176,7 +176,7 @@ class PronunciationCreationPage extends HookConsumerWidget
                                 Padding(
                                     padding: const EdgeInsets.only(top: 30),
                                     child: Text(
-                                      "Add pronunciation of ${wordCreationRequest.name}",
+                                      "Add pronunciation of ${wordName}",
                                       style: Theme.of(context)
                                           .textTheme
                                           .headlineMedium

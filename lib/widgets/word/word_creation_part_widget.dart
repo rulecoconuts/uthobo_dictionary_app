@@ -1,5 +1,6 @@
 import 'package:dictionary_app/accessors/pronunciation_utils_accessor.dart';
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
+import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_creation_request.dart';
 import 'package:dictionary_app/services/toast/toast_shower.dart';
@@ -35,8 +36,8 @@ class WordCreationPartWidget extends HookConsumerWidget
         wordPartSpecificationNotifier,
     PronunciationCreationRequest? pronunciation,
   ) {
-    router().push("/pronunciation_creation", extra: {
-      "word_creation_request": creationRequest,
+    router().push(Constants.pronunciationCreationRoutePath, extra: {
+      "word_name": creationRequest.name,
       "part": initialWordPartSpecification.part,
       "initial_pronunciation_request": pronunciation,
       "on_submit": (newPronunciation) {

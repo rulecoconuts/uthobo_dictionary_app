@@ -1,7 +1,9 @@
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
+import 'package:dictionary_app/services/pronunciation/pronunciation_creation_request.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_domain_object.dart';
+import 'package:dictionary_app/services/pronunciation/pronunciation_presign_result.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_service.dart';
 import 'package:dictionary_app/services/pronunciation/remote/pronunciation_rest_service.dart';
 import 'package:dictionary_app/services/pronunciation/remote/remote_pronunciation.dart';
@@ -33,5 +35,11 @@ class SimplePronunciationService
   @override
   RemotePronunciation toRemote(PronunciationDomainObject model) {
     return RemotePronunciation.fromDomain(model);
+  }
+
+  @override
+  Future<PronunciationPresignResult> presign(
+      PronunciationCreationRequest creationRequest) async {
+    return await pronunciationRESTService.presign(creationRequest);
   }
 }

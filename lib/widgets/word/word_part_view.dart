@@ -134,7 +134,9 @@ class WordPartView extends HookConsumerWidget {
 
               // EXISTING PRONUNCIATION REQUESTS
               WordPartPronunciationFetchListView(
-                  wordPart: pairNotif.value.wordPart, word: word),
+                partWordPair: pairNotif.value,
+                word: word,
+              ),
               if (isSourceWord)
                 // WORD PART TRANSLATIONS
                 WordPartTranslationFetchList(

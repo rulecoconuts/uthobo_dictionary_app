@@ -7,7 +7,7 @@ part of 'pronunciation_upload_stream_provider.dart';
 // **************************************************************************
 
 String _$pronunciationUploadStreamHash() =>
-    r'57f5ba15b8dbd3d9583817c1f4edd0f65dbeb7d0';
+    r'048e469056963860ce69d3e525e5a8c678f3e5bb';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -33,10 +33,12 @@ class _SystemHash {
 abstract class _$PronunciationUploadStream
     extends BuildlessAutoDisposeStreamNotifier<PronunciationUploadStatus> {
   late final WordPartDomainObject wordPart;
+  late final PronunciationPresignResult? specificPronunciationToWatch;
 
   Stream<PronunciationUploadStatus> build(
-    WordPartDomainObject wordPart,
-  );
+    WordPartDomainObject wordPart, {
+    PronunciationPresignResult? specificPronunciationToWatch,
+  });
 }
 
 /// See also [PronunciationUploadStream].
@@ -51,10 +53,12 @@ class PronunciationUploadStreamFamily
 
   /// See also [PronunciationUploadStream].
   PronunciationUploadStreamProvider call(
-    WordPartDomainObject wordPart,
-  ) {
+    WordPartDomainObject wordPart, {
+    PronunciationPresignResult? specificPronunciationToWatch,
+  }) {
     return PronunciationUploadStreamProvider(
       wordPart,
+      specificPronunciationToWatch: specificPronunciationToWatch,
     );
   }
 
@@ -64,6 +68,7 @@ class PronunciationUploadStreamFamily
   ) {
     return call(
       provider.wordPart,
+      specificPronunciationToWatch: provider.specificPronunciationToWatch,
     );
   }
 
@@ -88,9 +93,12 @@ class PronunciationUploadStreamProvider
         PronunciationUploadStatus> {
   /// See also [PronunciationUploadStream].
   PronunciationUploadStreamProvider(
-    WordPartDomainObject wordPart,
-  ) : this._internal(
-          () => PronunciationUploadStream()..wordPart = wordPart,
+    WordPartDomainObject wordPart, {
+    PronunciationPresignResult? specificPronunciationToWatch,
+  }) : this._internal(
+          () => PronunciationUploadStream()
+            ..wordPart = wordPart
+            ..specificPronunciationToWatch = specificPronunciationToWatch,
           from: pronunciationUploadStreamProvider,
           name: r'pronunciationUploadStreamProvider',
           debugGetCreateSourceHash:
@@ -101,6 +109,7 @@ class PronunciationUploadStreamProvider
           allTransitiveDependencies:
               PronunciationUploadStreamFamily._allTransitiveDependencies,
           wordPart: wordPart,
+          specificPronunciationToWatch: specificPronunciationToWatch,
         );
 
   PronunciationUploadStreamProvider._internal(
@@ -111,9 +120,11 @@ class PronunciationUploadStreamProvider
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.wordPart,
+    required this.specificPronunciationToWatch,
   }) : super.internal();
 
   final WordPartDomainObject wordPart;
+  final PronunciationPresignResult? specificPronunciationToWatch;
 
   @override
   Stream<PronunciationUploadStatus> runNotifierBuild(
@@ -121,6 +132,7 @@ class PronunciationUploadStreamProvider
   ) {
     return notifier.build(
       wordPart,
+      specificPronunciationToWatch: specificPronunciationToWatch,
     );
   }
 
@@ -129,13 +141,16 @@ class PronunciationUploadStreamProvider
     return ProviderOverride(
       origin: this,
       override: PronunciationUploadStreamProvider._internal(
-        () => create()..wordPart = wordPart,
+        () => create()
+          ..wordPart = wordPart
+          ..specificPronunciationToWatch = specificPronunciationToWatch,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         wordPart: wordPart,
+        specificPronunciationToWatch: specificPronunciationToWatch,
       ),
     );
   }
@@ -149,13 +164,15 @@ class PronunciationUploadStreamProvider
   @override
   bool operator ==(Object other) {
     return other is PronunciationUploadStreamProvider &&
-        other.wordPart == wordPart;
+        other.wordPart == wordPart &&
+        other.specificPronunciationToWatch == specificPronunciationToWatch;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, wordPart.hashCode);
+    hash = _SystemHash.combine(hash, specificPronunciationToWatch.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -165,6 +182,9 @@ mixin PronunciationUploadStreamRef
     on AutoDisposeStreamNotifierProviderRef<PronunciationUploadStatus> {
   /// The parameter `wordPart` of this provider.
   WordPartDomainObject get wordPart;
+
+  /// The parameter `specificPronunciationToWatch` of this provider.
+  PronunciationPresignResult? get specificPronunciationToWatch;
 }
 
 class _PronunciationUploadStreamProviderElement
@@ -175,6 +195,10 @@ class _PronunciationUploadStreamProviderElement
   @override
   WordPartDomainObject get wordPart =>
       (origin as PronunciationUploadStreamProvider).wordPart;
+  @override
+  PronunciationPresignResult? get specificPronunciationToWatch =>
+      (origin as PronunciationUploadStreamProvider)
+          .specificPronunciationToWatch;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
