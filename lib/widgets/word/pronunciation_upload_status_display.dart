@@ -2,6 +2,7 @@ import 'package:dictionary_app/services/pronunciation/pronunciation_presign_resu
 import 'package:dictionary_app/services/pronunciation/pronunciation_upload_status.dart';
 import 'package:dictionary_app/services/pronunciation/providers/pronunciation_upload_stream_provider.dart';
 import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
+import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,8 +21,25 @@ class PronunciationUploadStatusDisplay extends HookConsumerWidget {
           specificPronunciationToWatch: presignResult),
     );
 
-    // TODO: Implement
+    if (!statusUpdate.hasValue) return const SizedBox.shrink();
 
-    return const SizedBox();
+    return RoundedRectangleCard(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Icon(
+                Icons.mic,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            Expanded(
+                child: LinearProgressIndicator(
+              value: statusUpdate.value!.progress,
+              borderRadius: BorderRadius.circular(20),
+            ))
+          ],
+        ));
   }
 }

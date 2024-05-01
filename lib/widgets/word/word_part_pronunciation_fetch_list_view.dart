@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
@@ -12,6 +14,7 @@ import 'package:dictionary_app/services/word/word_domain_object.dart';
 import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
 import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_icon_button.dart';
 import 'package:dictionary_app/widgets/pronunciation/pronunciation_display_widget.dart';
+import 'package:dictionary_app/widgets/word/word_part_pronunciation_upload_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -47,6 +50,30 @@ class WordPartPronunciationFetchListView extends HookConsumerWidget
         .schedule(pronunciationCreationRequest);
   }
 
+  Future addNewPronunciation(
+      ValueNotifier<Set<PronunciationDomainObject>> pronunciations,
+      PronunciationDomainObject newPronunciation) async {
+    if (pronunciations.value.contains(newPronunciation)) return;
+    // Add pronunciation
+    pronunciations.value.add(newPronunciation);
+    pronunciations.value = (pronunciations.value.toList()
+          ..sort(PronunciationDomainObject.staticCompare))
+        .toSet();
+  }
+
+  Future deletePronunciation(
+      ValueNotifier<Set<PronunciationDomainObject>> pronunciations,
+      PronunciationDomainObject pronunciation,
+      WidgetRef ref) async {
+    pronunciations.value.remove(pronunciation);
+    pronunciations.value = (pronunciations.value.toList()
+          ..sort(PronunciationDomainObject.staticCompare))
+        .toSet();
+    ref
+        .read(pronunciationListFutureProvider(partWordPair.wordPart).notifier)
+        .delete(pronunciation);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var listState =
@@ -64,7 +91,9 @@ class WordPartPronunciationFetchListView extends HookConsumerWidget
         .map((e) => PronunciationDisplayWidget(
             pronunciation: e,
             onInfoClicked: (pronunciation) {},
-            onDeleteClicked: (pronunciation) {}))
+            onDeleteClicked: (pronunciation) {
+              deletePronunciation(pronunciations, pronunciation, ref);
+            }))
         .cast<Widget>()
         .separator(() => const Padding(padding: EdgeInsets.only(top: 10)))
         .toList();
@@ -72,6 +101,14 @@ class WordPartPronunciationFetchListView extends HookConsumerWidget
     return Column(
       children: [
         ...pronunciationWidgets,
+        WordPartPronunciationUploadListView(
+          wordPart: partWordPair.wordPart,
+          onPronunciationAdded: (newPronunciation) {
+            Timer(Duration(milliseconds: 30), () {
+              addNewPronunciation(pronunciations, newPronunciation);
+            });
+          },
+        ),
         Padding(
           padding: EdgeInsets.only(top: 15),
           child: Row(children: [

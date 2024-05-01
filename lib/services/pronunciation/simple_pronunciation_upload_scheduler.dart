@@ -164,6 +164,7 @@ class SimplePronunciationUploadScheduler
   void _notifySuccess(PronunciationPresignResult presignResult) {
     _eventStreamController.add(PronunciationUploadStatus(
         pronunciationPresignResult: presignResult,
+        progress: 1,
         stage: UploadStage.successful));
   }
 
@@ -234,7 +235,8 @@ class SimplePronunciationUploadScheduler
           data: file.openRead(),
           options: Options(headers: {
             Headers.contentLengthHeader: length,
-            Headers.contentTypeHeader: mimeType ?? "application/octet-stream"
+            Headers.contentTypeHeader: mimeType ?? "application/octet-stream",
+            "x-amz-acl": "public-read"
           }), onSendProgress: (count, total) {
         // Send upload progress to main isolate
         bytesUploaded = count;

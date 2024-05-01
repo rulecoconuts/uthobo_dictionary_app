@@ -3,6 +3,7 @@ import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:dictionary_app/services/language/remote/remote_language.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/part_of_speech/remote/remote_part_of_speech.dart';
+import 'package:dictionary_app/services/pronunciation/pronunciation_presign_result.dart';
 import 'package:dictionary_app/services/pronunciation/remote/remote_pronunciation.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
@@ -31,6 +32,7 @@ class SerializationConfig extends IocConfig {
       ..addDeserializer(WordCreationResult.fromJson)
       ..addDeserializer(RemotePronunciation.fromJson)
       ..addDeserializer(RemoteWordPart.fromJson)
-      ..addDeserializer(RemoteWord.fromJson));
+      ..addDeserializer(RemoteWord.fromJson)
+      ..addDeserializer(PronunciationPresignResult.fromJson));
   }
 }

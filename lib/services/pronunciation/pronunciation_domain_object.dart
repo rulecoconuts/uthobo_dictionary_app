@@ -44,4 +44,21 @@ class PronunciationDomainObject {
 
   factory PronunciationDomainObject.fromJson(Map<String, dynamic> json) =>
       _$PronunciationDomainObjectFromJson(json);
+
+  @override
+  int get hashCode =>
+      id != null ? Object.hash(id, null) : Object.hash(audioUrl, null);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is PronunciationDomainObject && other.hashCode == hashCode;
+
+  int compare(PronunciationDomainObject other) {
+    return (id ?? 0).compareTo(other.id ?? 0);
+  }
+
+  static int staticCompare(
+      PronunciationDomainObject a, PronunciationDomainObject b) {
+    return a.compare(b);
+  }
 }
