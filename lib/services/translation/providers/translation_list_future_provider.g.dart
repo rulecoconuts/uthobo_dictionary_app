@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'pronunciation_list_future_provider.dart';
+part of 'translation_list_future_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$pronunciationListFutureHash() =>
-    r'eab2df1c1c28341b48ccc8a5b3474e217081160b';
+String _$translationListFutureHash() =>
+    r'25fa0ac64564155994ba5af5f5f0bc341df1b354';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,37 +30,37 @@ class _SystemHash {
   }
 }
 
-abstract class _$PronunciationListFuture
-    extends BuildlessAutoDisposeAsyncNotifier<List<PronunciationDomainObject>> {
+abstract class _$TranslationListFuture
+    extends BuildlessAutoDisposeAsyncNotifier<List<FullTranslation>> {
   late final WordPartDomainObject wordPart;
 
-  FutureOr<List<PronunciationDomainObject>> build(
+  FutureOr<List<FullTranslation>> build(
     WordPartDomainObject wordPart,
   );
 }
 
-/// See also [PronunciationListFuture].
-@ProviderFor(PronunciationListFuture)
-const pronunciationListFutureProvider = PronunciationListFutureFamily();
+/// See also [TranslationListFuture].
+@ProviderFor(TranslationListFuture)
+const translationListFutureProvider = TranslationListFutureFamily();
 
-/// See also [PronunciationListFuture].
-class PronunciationListFutureFamily
-    extends Family<AsyncValue<List<PronunciationDomainObject>>> {
-  /// See also [PronunciationListFuture].
-  const PronunciationListFutureFamily();
+/// See also [TranslationListFuture].
+class TranslationListFutureFamily
+    extends Family<AsyncValue<List<FullTranslation>>> {
+  /// See also [TranslationListFuture].
+  const TranslationListFutureFamily();
 
-  /// See also [PronunciationListFuture].
-  PronunciationListFutureProvider call(
+  /// See also [TranslationListFuture].
+  TranslationListFutureProvider call(
     WordPartDomainObject wordPart,
   ) {
-    return PronunciationListFutureProvider(
+    return TranslationListFutureProvider(
       wordPart,
     );
   }
 
   @override
-  PronunciationListFutureProvider getProviderOverride(
-    covariant PronunciationListFutureProvider provider,
+  TranslationListFutureProvider getProviderOverride(
+    covariant TranslationListFutureProvider provider,
   ) {
     return call(
       provider.wordPart,
@@ -79,31 +79,31 @@ class PronunciationListFutureFamily
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'pronunciationListFutureProvider';
+  String? get name => r'translationListFutureProvider';
 }
 
-/// See also [PronunciationListFuture].
-class PronunciationListFutureProvider
-    extends AutoDisposeAsyncNotifierProviderImpl<PronunciationListFuture,
-        List<PronunciationDomainObject>> {
-  /// See also [PronunciationListFuture].
-  PronunciationListFutureProvider(
+/// See also [TranslationListFuture].
+class TranslationListFutureProvider
+    extends AutoDisposeAsyncNotifierProviderImpl<TranslationListFuture,
+        List<FullTranslation>> {
+  /// See also [TranslationListFuture].
+  TranslationListFutureProvider(
     WordPartDomainObject wordPart,
   ) : this._internal(
-          () => PronunciationListFuture()..wordPart = wordPart,
-          from: pronunciationListFutureProvider,
-          name: r'pronunciationListFutureProvider',
+          () => TranslationListFuture()..wordPart = wordPart,
+          from: translationListFutureProvider,
+          name: r'translationListFutureProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$pronunciationListFutureHash,
-          dependencies: PronunciationListFutureFamily._dependencies,
+                  : _$translationListFutureHash,
+          dependencies: TranslationListFutureFamily._dependencies,
           allTransitiveDependencies:
-              PronunciationListFutureFamily._allTransitiveDependencies,
+              TranslationListFutureFamily._allTransitiveDependencies,
           wordPart: wordPart,
         );
 
-  PronunciationListFutureProvider._internal(
+  TranslationListFutureProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -116,8 +116,8 @@ class PronunciationListFutureProvider
   final WordPartDomainObject wordPart;
 
   @override
-  FutureOr<List<PronunciationDomainObject>> runNotifierBuild(
-    covariant PronunciationListFuture notifier,
+  FutureOr<List<FullTranslation>> runNotifierBuild(
+    covariant TranslationListFuture notifier,
   ) {
     return notifier.build(
       wordPart,
@@ -125,10 +125,10 @@ class PronunciationListFutureProvider
   }
 
   @override
-  Override overrideWith(PronunciationListFuture Function() create) {
+  Override overrideWith(TranslationListFuture Function() create) {
     return ProviderOverride(
       origin: this,
-      override: PronunciationListFutureProvider._internal(
+      override: TranslationListFutureProvider._internal(
         () => create()..wordPart = wordPart,
         from: from,
         name: null,
@@ -141,15 +141,14 @@ class PronunciationListFutureProvider
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<PronunciationListFuture,
-      List<PronunciationDomainObject>> createElement() {
-    return _PronunciationListFutureProviderElement(this);
+  AutoDisposeAsyncNotifierProviderElement<TranslationListFuture,
+      List<FullTranslation>> createElement() {
+    return _TranslationListFutureProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is PronunciationListFutureProvider &&
-        other.wordPart == wordPart;
+    return other is TranslationListFutureProvider && other.wordPart == wordPart;
   }
 
   @override
@@ -161,20 +160,20 @@ class PronunciationListFutureProvider
   }
 }
 
-mixin PronunciationListFutureRef
-    on AutoDisposeAsyncNotifierProviderRef<List<PronunciationDomainObject>> {
+mixin TranslationListFutureRef
+    on AutoDisposeAsyncNotifierProviderRef<List<FullTranslation>> {
   /// The parameter `wordPart` of this provider.
   WordPartDomainObject get wordPart;
 }
 
-class _PronunciationListFutureProviderElement
-    extends AutoDisposeAsyncNotifierProviderElement<PronunciationListFuture,
-        List<PronunciationDomainObject>> with PronunciationListFutureRef {
-  _PronunciationListFutureProviderElement(super.provider);
+class _TranslationListFutureProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<TranslationListFuture,
+        List<FullTranslation>> with TranslationListFutureRef {
+  _TranslationListFutureProviderElement(super.provider);
 
   @override
   WordPartDomainObject get wordPart =>
-      (origin as PronunciationListFutureProvider).wordPart;
+      (origin as TranslationListFutureProvider).wordPart;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

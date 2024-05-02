@@ -4,6 +4,7 @@ import 'package:dictionary_app/services/foundation/update_service.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_domain_object.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_backed_domain_service_mixin.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
+import 'package:dictionary_app/services/translation/full_translation.dart';
 import 'package:dictionary_app/services/word_part/remote_word_part.dart';
 import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
 import 'package:dictionary_app/services/word_part/word_part_rest_service.dart';
@@ -43,5 +44,12 @@ class SimpleWordPartService
         .getPronunciations(RemoteWordPart.fromDomain(wordPart));
 
     return remote.map((e) => e.toDomain()).toList();
+  }
+
+  @override
+  Future<List<FullTranslation>> getTranslations(
+      WordPartDomainObject wordPart) async {
+    return await wordPartRESTService
+        .getTranslations(RemoteWordPart.fromDomain(wordPart));
   }
 }

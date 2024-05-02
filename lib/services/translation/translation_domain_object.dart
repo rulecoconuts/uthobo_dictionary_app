@@ -41,4 +41,26 @@ class TranslationDomainObject {
 
   factory TranslationDomainObject.fromJson(Map<String, dynamic> json) =>
       _$TranslationDomainObjectFromJson(json);
+
+  TranslationDomainObject copyWith(
+      {int? id,
+      int? sourceWordPartId,
+      int? targetWordPartId,
+      String? note,
+      String? reverseNote,
+      DateTime? createdAt,
+      int? createdBy,
+      DateTime? updatedAt,
+      int? updatedBy}) {
+    return TranslationDomainObject(
+        sourceWordPartId: sourceWordPartId ?? this.sourceWordPartId,
+        targetWordPartId: targetWordPartId ?? this.targetWordPartId,
+        id: id ?? this.id,
+        note: note ?? this.note,
+        reverseNote: reverseNote ?? this.reverseNote,
+        createdAt: createdAt ?? this.createdAt,
+        createdBy: createdBy ?? this.createdBy,
+        updatedAt: updatedAt ?? this.updatedAt,
+        updatedBy: updatedBy ?? this.updatedBy);
+  }
 }
