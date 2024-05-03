@@ -9,6 +9,7 @@ import 'package:dictionary_app/config/routing/main_routing_config.dart';
 import 'package:dictionary_app/config/serialization/serialization_config.dart';
 import 'package:dictionary_app/config/server/server_config.dart';
 import 'package:dictionary_app/config/storage/storage_config.dart';
+import 'package:dictionary_app/config/translation/translation_services_config.dart';
 import 'package:dictionary_app/config/user/user_config.dart';
 import 'package:dictionary_app/config/word/word_services_config.dart';
 import 'package:dictionary_app/services/flavor/app_flavor.dart';
@@ -31,7 +32,8 @@ class MainConfig extends ConfigListConfig {
       WordServicesConfig(),
       PartOfSpeechServicesConfig(),
       PronunciationServicesConfig(),
-      MainRoutingConfig()
+      TranslationServicesConfig(),
+      MainRoutingConfig(),
     ];
   }
 }

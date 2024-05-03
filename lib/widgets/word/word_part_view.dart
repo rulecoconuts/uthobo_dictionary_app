@@ -1,4 +1,5 @@
 import 'package:dictionary_app/services/language/language_domain_object.dart';
+import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
@@ -42,9 +43,12 @@ class WordPartView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var translationContext = ref.watch(translationContextControlProvider);
+
+    if (!translationContext.hasValue) return const SizedBox.shrink();
     var pairNotif = useState(partWordPair);
 
-    bool isSourceWord = true;
+    bool isSourceWord = word.languageId == translationContext.value!.source.id;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -137,10 +141,22 @@ class WordPartView extends HookConsumerWidget {
                 partWordPair: pairNotif.value,
                 word: word,
               ),
-              if (isSourceWord)
+              if (isSourceWord) ...[
+                Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      "Translations",
+                      style: Theme.of(context).textTheme.titleSmall,
+                    )),
                 // WORD PART TRANSLATIONS
-                WordPartTranslationFetchList(
-                    wordPart: pairNotif.value.wordPart, word: word)
+                Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: WordPartTranslationFetchList(
+                      pair: pairNotif.value,
+                      word: word,
+                      translationContext: translationContext.value!,
+                    ))
+              ]
             ]
                 .separator(
                     () => const Padding(padding: EdgeInsets.only(top: 10)))

@@ -7,7 +7,7 @@ part of 'translation_list_future_provider.dart';
 // **************************************************************************
 
 String _$translationListFutureHash() =>
-    r'25fa0ac64564155994ba5af5f5f0bc341df1b354';
+    r'60f1fb51ec7e72e68201e87ce2c7f463dd2dc2b1';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -33,9 +33,11 @@ class _SystemHash {
 abstract class _$TranslationListFuture
     extends BuildlessAutoDisposeAsyncNotifier<List<FullTranslation>> {
   late final WordPartDomainObject wordPart;
+  late final LanguageDomainObject targetLanguage;
 
   FutureOr<List<FullTranslation>> build(
     WordPartDomainObject wordPart,
+    LanguageDomainObject targetLanguage,
   );
 }
 
@@ -52,9 +54,11 @@ class TranslationListFutureFamily
   /// See also [TranslationListFuture].
   TranslationListFutureProvider call(
     WordPartDomainObject wordPart,
+    LanguageDomainObject targetLanguage,
   ) {
     return TranslationListFutureProvider(
       wordPart,
+      targetLanguage,
     );
   }
 
@@ -64,6 +68,7 @@ class TranslationListFutureFamily
   ) {
     return call(
       provider.wordPart,
+      provider.targetLanguage,
     );
   }
 
@@ -89,8 +94,11 @@ class TranslationListFutureProvider
   /// See also [TranslationListFuture].
   TranslationListFutureProvider(
     WordPartDomainObject wordPart,
+    LanguageDomainObject targetLanguage,
   ) : this._internal(
-          () => TranslationListFuture()..wordPart = wordPart,
+          () => TranslationListFuture()
+            ..wordPart = wordPart
+            ..targetLanguage = targetLanguage,
           from: translationListFutureProvider,
           name: r'translationListFutureProvider',
           debugGetCreateSourceHash:
@@ -101,6 +109,7 @@ class TranslationListFutureProvider
           allTransitiveDependencies:
               TranslationListFutureFamily._allTransitiveDependencies,
           wordPart: wordPart,
+          targetLanguage: targetLanguage,
         );
 
   TranslationListFutureProvider._internal(
@@ -111,9 +120,11 @@ class TranslationListFutureProvider
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.wordPart,
+    required this.targetLanguage,
   }) : super.internal();
 
   final WordPartDomainObject wordPart;
+  final LanguageDomainObject targetLanguage;
 
   @override
   FutureOr<List<FullTranslation>> runNotifierBuild(
@@ -121,6 +132,7 @@ class TranslationListFutureProvider
   ) {
     return notifier.build(
       wordPart,
+      targetLanguage,
     );
   }
 
@@ -129,13 +141,16 @@ class TranslationListFutureProvider
     return ProviderOverride(
       origin: this,
       override: TranslationListFutureProvider._internal(
-        () => create()..wordPart = wordPart,
+        () => create()
+          ..wordPart = wordPart
+          ..targetLanguage = targetLanguage,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         wordPart: wordPart,
+        targetLanguage: targetLanguage,
       ),
     );
   }
@@ -148,13 +163,16 @@ class TranslationListFutureProvider
 
   @override
   bool operator ==(Object other) {
-    return other is TranslationListFutureProvider && other.wordPart == wordPart;
+    return other is TranslationListFutureProvider &&
+        other.wordPart == wordPart &&
+        other.targetLanguage == targetLanguage;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, wordPart.hashCode);
+    hash = _SystemHash.combine(hash, targetLanguage.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -164,6 +182,9 @@ mixin TranslationListFutureRef
     on AutoDisposeAsyncNotifierProviderRef<List<FullTranslation>> {
   /// The parameter `wordPart` of this provider.
   WordPartDomainObject get wordPart;
+
+  /// The parameter `targetLanguage` of this provider.
+  LanguageDomainObject get targetLanguage;
 }
 
 class _TranslationListFutureProviderElement
@@ -174,6 +195,9 @@ class _TranslationListFutureProviderElement
   @override
   WordPartDomainObject get wordPart =>
       (origin as TranslationListFutureProvider).wordPart;
+  @override
+  LanguageDomainObject get targetLanguage =>
+      (origin as TranslationListFutureProvider).targetLanguage;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

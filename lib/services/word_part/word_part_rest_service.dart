@@ -7,6 +7,7 @@ import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
+import 'package:dictionary_app/services/language/remote/remote_language.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_domain_object.dart';
 import 'package:dictionary_app/services/pronunciation/remote/remote_pronunciation.dart';
 import 'package:dictionary_app/services/serialization/serialization_utils.dart';
@@ -83,9 +84,11 @@ class WordPartRESTService
     }
   }
 
-  Future<List<FullTranslation>> getTranslations(RemoteWordPart wordPart) async {
+  Future<List<FullTranslation>> getTranslations(
+      RemoteWordPart wordPart, RemoteLanguage remoteLanguage) async {
     try {
-      String url = "${getEndpoint()}/${wordPart.id}/translations/full";
+      String url =
+          "${getEndpoint()}/${wordPart.id}/translations/full/languages/${remoteLanguage.id}";
       var dio = getDio();
 
       var request = await dio.get(url,

@@ -23,6 +23,17 @@ class FullTranslation {
       required this.targetWord,
       required this.targetWordPart});
 
+  @override
+  int get hashCode => Object.hash(translation, null);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is FullTranslation && other.hashCode == hashCode;
+
+  bool contains(WordPartDomainObject wordPart) {
+    return sourceWordPart == wordPart || targetWordPart == wordPart;
+  }
+
   bool isReversed(LanguageDomainObject sourceLanguage) {
     if (targetWord.languageId == sourceLanguage.id) return true;
 

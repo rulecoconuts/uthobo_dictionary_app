@@ -1,4 +1,5 @@
 import 'package:dictionary_app/services/language/language_domain_object.dart';
+import 'package:dictionary_app/services/language/translation_context_domain_object.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/translation/full_translation.dart';
 import 'package:dictionary_app/services/translation/providers/translation_list_future_provider.dart';
@@ -11,24 +12,26 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class TranslationDisplay extends HookConsumerWidget {
   final FullTranslation translation;
-  final LanguageDomainObject sourceLanguage;
+  final TranslationContextDomainObject translationContext;
   const TranslationDisplay(
-      {required this.translation, required this.sourceLanguage, super.key});
+      {required this.translation, required this.translationContext, super.key});
 
   Future<String?> update(
       TranslationDomainObject translationDomainObject, WidgetRef ref) async {
     try {
       TranslationDomainObject newWordPart = await ref
-          .read(translationListFutureProvider(translation.sourceWordPart)
+          .read(translationListFutureProvider(
+                  translation.sourceWordPart, translationContext.target)
               .notifier)
           .updateTranslation(translationDomainObject);
+      return null;
     } on ApiError catch (e, stackTrace) {
       String error = e.generateCompiledErrorMessages();
 
       if (error.isEmpty) return e.message ?? e.debugMessage ?? e.status;
 
       return error;
-    } catch (e, stackTracee) {
+    } catch (e, stackTrace) {
       return "$e";
     }
   }
@@ -41,9 +44,9 @@ class TranslationDisplay extends HookConsumerWidget {
         Row(children: [
           // Target word name
           RoundedRectangleTextTag(
-            text: translation.deriveSourceWord(sourceLanguage).name,
+            text: translation.deriveTargetWord(translationContext.source).name,
             filled: true,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           )
         ]),
 
@@ -53,12 +56,13 @@ class TranslationDisplay extends HookConsumerWidget {
             child: EditableTextView(
                 onEdit: (newNote) async {
                   // Update note
-                  var copy = translation.copyWithNote(sourceLanguage, newNote);
-                  String? error = await update(translation.translation, ref);
+                  var copy = translation.copyWithNote(
+                      translationContext.source, newNote);
+                  String? error = await update(copy.translation, ref);
 
                   if (error != null) return error;
 
-                  translation.setNote(sourceLanguage, newNote);
+                  translation.setNote(translationContext.source, newNote);
                   updateCount.value = (updateCount.value + 1) % 5000;
                   return null;
                 },
@@ -66,7 +70,7 @@ class TranslationDisplay extends HookConsumerWidget {
                 minLines: 2,
                 maxLines: 100,
                 maxLength: 7200,
-                initial: translation.deriveNote(sourceLanguage),
+                initial: translation.deriveNote(translationContext.source),
                 inputDecoration: InputDecoration(
                     hintText: "Enter translation note",
                     hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(

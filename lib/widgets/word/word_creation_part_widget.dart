@@ -83,7 +83,8 @@ class WordCreationPartWidget extends HookConsumerWidget
   void goToTranslationSelectionPage(
       ValueNotifier<WordCreationWordPartSpecification>
           wordCreationWordPartSpecification) {
-    router().push("/translation_selection", extra: <String, dynamic>{
+    router()
+        .push(Constants.translationSelectionRoutePath, extra: <String, dynamic>{
       "part": wordCreationWordPartSpecification.value.part,
       "word": creationRequest.name,
       "on_submit": (translation) {
@@ -259,7 +260,7 @@ class WordCreationPartWidget extends HookConsumerWidget
                   children: [
                     if (wordPartSpecification.value.translations.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(top: 10),
+                        padding: const EdgeInsets.only(top: 10),
                         child: Text(
                           "Translations",
                           style: Theme.of(context).textTheme.titleSmall,

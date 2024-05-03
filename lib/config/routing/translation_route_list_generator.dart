@@ -1,4 +1,5 @@
 import 'package:dictionary_app/config/routing/route_list_generator.dart';
+import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/widgets/word/translation_selection_page.dart';
 import 'package:go_router/src/route.dart';
 
@@ -7,7 +8,7 @@ class TranslationRouteListGenerator implements RouteListGenerator {
   List<RouteBase> generate() {
     return [
       GoRoute(
-        path: "/translation_selection",
+        path: Constants.translationSelectionRoutePath,
         builder: (context, state) {
           var args = state.extra as Map<String, dynamic>;
 

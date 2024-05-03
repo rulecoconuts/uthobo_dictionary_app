@@ -1,6 +1,8 @@
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
+import 'package:dictionary_app/services/language/language_domain_object.dart';
+import 'package:dictionary_app/services/language/remote/remote_language.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_domain_object.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_backed_domain_service_mixin.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
@@ -47,9 +49,10 @@ class SimpleWordPartService
   }
 
   @override
-  Future<List<FullTranslation>> getTranslations(
-      WordPartDomainObject wordPart) async {
-    return await wordPartRESTService
-        .getTranslations(RemoteWordPart.fromDomain(wordPart));
+  Future<List<FullTranslation>> getTranslations(WordPartDomainObject wordPart,
+      LanguageDomainObject targetLanguage) async {
+    return await wordPartRESTService.getTranslations(
+        RemoteWordPart.fromDomain(wordPart),
+        RemoteLanguage.fromDomain(targetLanguage));
   }
 }

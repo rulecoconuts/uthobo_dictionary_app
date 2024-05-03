@@ -63,4 +63,13 @@ class TranslationDomainObject {
         updatedAt: updatedAt ?? this.updatedAt,
         updatedBy: updatedBy ?? this.updatedBy);
   }
+
+  @override
+  int get hashCode => id != null
+      ? Object.hash(id, null)
+      : Object.hash(sourceWordPartId, targetWordPartId);
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is TranslationDomainObject && other.hashCode == hashCode;
 }
