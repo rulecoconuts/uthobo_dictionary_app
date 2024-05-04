@@ -27,7 +27,7 @@ class WordPartView extends HookConsumerWidget {
     try {
       WordPartDomainObject newWordPart = await ref
           .read(fullWordControlProvider(
-                  "%%", LanguageDomainObject(name: "", id: word.id))
+                  "%%", LanguageDomainObject(name: "", id: word.languageId))
               .notifier)
           .updateWordPart(wordPart);
     } on ApiError catch (e, stackTrace) {

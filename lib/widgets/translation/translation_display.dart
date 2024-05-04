@@ -46,6 +46,7 @@ class TranslationDisplay extends HookConsumerWidget {
           RoundedRectangleTextTag(
             text: translation.deriveTargetWord(translationContext.source).name,
             filled: true,
+            color: const Color(0xFF628ED9),
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           )
         ]),

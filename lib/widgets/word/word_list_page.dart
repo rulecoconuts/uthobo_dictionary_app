@@ -1,4 +1,5 @@
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
+import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
@@ -67,8 +68,8 @@ class WordListPage extends HookConsumerWidget with RoutingUtilsAccessor {
   }
 
   void goToWordViewPage(FullWordPart word) {
-    router()
-        .push("/source_word_view", extra: <String, dynamic>{"full_word": word});
+    router().push(Constants.sourceWordViewRoutePath,
+        extra: <String, dynamic>{"full_word": word});
   }
 
   @override

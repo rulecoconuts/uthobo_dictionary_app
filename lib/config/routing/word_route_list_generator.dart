@@ -1,4 +1,5 @@
 import 'package:dictionary_app/config/routing/route_list_generator.dart';
+import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/widgets/pronunciation/pronunciation_creation_page.dart';
 import 'package:dictionary_app/widgets/word/source_word_creation_page.dart';
 import 'package:dictionary_app/widgets/word/source_word_view_page.dart';
@@ -41,7 +42,7 @@ class WordRouteListGenerator extends RouteListGenerator {
         },
       ),
       GoRoute(
-          path: "/source_word_view",
+          path: Constants.sourceWordViewRoutePath,
           builder: (context, state) {
             var args = state.extra as Map<String, dynamic>;
 

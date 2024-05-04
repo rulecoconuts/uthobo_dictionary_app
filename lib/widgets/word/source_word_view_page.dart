@@ -1,13 +1,11 @@
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/language/language_domain_object.dart';
 import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
-import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/providers/full_word_control.dart';
 import 'package:dictionary_app/services/word/word_domain_object.dart';
 import 'package:dictionary_app/widgets/helper_widgets/go_back_panel.dart';
-import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_tag_add_button.dart';
 import 'package:dictionary_app/widgets/text/editable_text_view.dart';
 import 'package:dictionary_app/widgets/word/word_parts_list_fetch_view.dart';
 import 'package:flutter/material.dart';
@@ -103,7 +101,7 @@ class SourceWordViewPage extends HookConsumerWidget with RoutingUtilsAccessor {
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                           ),
-                          // TODO: DISPLAY PARTS
+                          // PARTS
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: WordPartsListFetchView(fullWord: fullWord),

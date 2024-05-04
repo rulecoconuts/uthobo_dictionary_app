@@ -53,6 +53,17 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     currentPageDetails.value = getFirstPageDetails();
   }
 
+  void search(
+      String searchString,
+      ValueNotifier<String> searchStringNotif,
+      ValueNotifier<Map<int, ApiPage<PartOfSpeechDomainObject>>> pages,
+      ValueNotifier<ApiPageDetails> currentPageDetails) {
+    // Delete search results for previous search string
+    searchStringNotif.value = searchString;
+    pages.value = {};
+    currentPageDetails.value = getFirstPageDetails();
+  }
+
   /// The details of the first page to be fetched always
   ApiPageDetails getFirstPageDetails() {
     return const ApiPageDetails(sortFields: [ApiSort(name: "name")]);
@@ -76,15 +87,9 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     selectedPart.value = newPart;
     String searchStringValue = searchString.value;
 
-    if (isPartAMatch(newPart, searchStringValue)) {
-      // If new part matches search string, wait for page to load, and try to scroll to it
-      newPartNotifier.value = newPart;
-    } else {
-      // If new part does not match search string, perform new search with new part
-      // name
-      searchString.value = newPart.name;
-      reset(pages, currentPageDetails);
-    }
+    //perform new search with new part name
+    search(newPart.name, searchString, pages, currentPageDetails);
+
     Fluttertoast.showToast(msg: "Created part of speech");
   }
 
@@ -208,16 +213,16 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
     ScrollOffsetController scrollOffsetController = ScrollOffsetController();
     ScrollOffsetListener scrollOffsetListener = ScrollOffsetListener.create();
 
-    useEffect(() {
-      var searchForNewPattern = () {
-        // New search string entered. Reset page
-        reset(pages, currentPageDetails);
-      };
+    // useEffect(() {
+    //   var searchForNewPattern = () {
+    //     // New search string entered. Reset page
+    //     reset(pages, currentPageDetails);
+    //   };
 
-      searchString.addListener(searchForNewPattern);
+    //   searchString.addListener(searchForNewPattern);
 
-      return () => searchString.removeListener(searchForNewPattern);
-    }, [searchString]);
+    //   return () => searchString.removeListener(searchForNewPattern);
+    // }, [searchString]);
 
     if (lastFetchedPage.hasValue) {
       // Add new result to state
@@ -227,19 +232,19 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
 
     var partList = getPartList(pages);
 
-    useEffect(() {
-      // Select newly created part and scroll to it if necessary
-      var newPageSubscription = selectNewlyCreatedPartIfItExists(
-          newPart,
-          partList,
-          itemScrollController,
-          lastFetchedPage,
-          ref,
-          searchString,
-          currentPageDetails);
+    // useEffect(() {
+    //   // Select newly created part and scroll to it if necessary
+    //   var newPageSubscription = selectNewlyCreatedPartIfItExists(
+    //       newPart,
+    //       partList,
+    //       itemScrollController,
+    //       lastFetchedPage,
+    //       ref,
+    //       searchString,
+    //       currentPageDetails);
 
-      return newPageSubscription?.close;
-    }, [newPart.value]);
+    //   return newPageSubscription?.close;
+    // }, [newPart.value]);
 
     return Material(
       child: Scaffold(
@@ -278,8 +283,9 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
                       padding: EdgeInsets.symmetric(vertical: 10)
                           .copyWith(bottom: 30),
                       child: SearchBoxWidget(
-                          onSearchRequested: (searchVal) =>
-                              searchString.value = searchVal),
+                          initialSearchString: searchString.value,
+                          onSearchRequested: (searchVal) => search(searchVal,
+                              searchString, pages, currentPageDetails)),
                     ),
                     if (lastFetchedPage.isLoading && partList.isEmpty)
                       const Expanded(
@@ -291,7 +297,7 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
                           child: NotFoundWidget(
                               error:
                                   "Could not find the part of speech you were looking for?  Create it!"))
-                    else
+                    else if (partList.isNotEmpty)
                       Expanded(
                           child: ScrollablePositionedList.separated(
                               scrollOffsetController: scrollOffsetController,
@@ -300,6 +306,7 @@ class PartOfSpeechSelectionPage extends HookConsumerWidget
                               itemPositionsListener: itemPositionsListener,
                               itemCount: partList.length,
                               itemBuilder: (ctx, index) {
+                                if (index == -1) return const SizedBox.shrink();
                                 var part = partList[index];
                                 return InkWell(
                                     onTap: () => selectedPart.value = part,

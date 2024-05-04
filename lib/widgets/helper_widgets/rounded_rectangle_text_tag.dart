@@ -6,11 +6,13 @@ class RoundedRectangleTextTag extends HookWidget {
   final bool filled;
   final EdgeInsets padding;
   final String text;
+  final Color? color;
 
   const RoundedRectangleTextTag(
       {required this.text,
       this.filled = false,
       this.padding = const EdgeInsets.all(8),
+      this.color,
       Key? key})
       : super(key: key);
 
@@ -19,6 +21,7 @@ class RoundedRectangleTextTag extends HookWidget {
     double size = 25;
     return RoundedRectangleTag(
       filled: filled,
+      color: color,
       padding: padding,
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Text(text,

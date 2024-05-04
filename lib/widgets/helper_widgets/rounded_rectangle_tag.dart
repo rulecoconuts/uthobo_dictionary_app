@@ -5,10 +5,12 @@ class RoundedRectangleTag extends HookWidget {
   final bool filled;
   final Widget child;
   final EdgeInsets padding;
+  final Color? color;
   const RoundedRectangleTag(
       {required this.child,
       this.filled = false,
       this.padding = const EdgeInsets.all(5),
+      this.color,
       Key? key})
       : super(key: key);
 
@@ -17,10 +19,11 @@ class RoundedRectangleTag extends HookWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-          color: filled ? Theme.of(context).colorScheme.primary : null,
+          color: filled ? color ?? Theme.of(context).colorScheme.primary : null,
           border: filled
               ? null
-              : Border.all(color: Theme.of(context).colorScheme.primary),
+              : Border.all(
+                  color: color ?? Theme.of(context).colorScheme.primary),
           borderRadius: BorderRadius.circular(20)),
       child: child,
     );

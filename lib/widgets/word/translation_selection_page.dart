@@ -1,4 +1,5 @@
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
+import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
 import 'package:dictionary_app/services/language/translation_context_domain_object.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
@@ -9,6 +10,7 @@ import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_obj
 import 'package:dictionary_app/services/toast/toast_shower.dart';
 import 'package:dictionary_app/services/word/full_word_part.dart';
 import 'package:dictionary_app/services/word/providers/full_word_control.dart';
+import 'package:dictionary_app/services/word/vowel_checker.dart';
 import 'package:dictionary_app/services/word/word_domain_object.dart';
 import 'package:dictionary_app/services/word_part/word_part_domain_object.dart';
 import 'package:dictionary_app/widgets/helper_widgets/go_back_panel.dart';
@@ -84,9 +86,12 @@ class TranslationSelectionPage extends HookConsumerWidget
   }
 
   void goToEditWordPage(
-    ValueNotifier<FullWordPart?> selectedTranslation,
-    ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
-  ) {}
+      ValueNotifier<FullWordPart?> selectedTranslation,
+      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
+      FullWordPart wordToEdit) {
+    router().push(Constants.sourceWordViewRoutePath,
+        extra: <String, dynamic>{"full_word": wordToEdit});
+  }
 
   void showWordWithoutRequiredPartWarning(
     BuildContext context,
@@ -99,7 +104,7 @@ class TranslationSelectionPage extends HookConsumerWidget
         builder: (dialogContext) {
           return cup.CupertinoAlertDialog(
             title: Text(
-              "Word is not a ${part.name}. Change that?",
+              "Word is not ${VowelChecker().addIndefiniteArticle(part.name)}. Change that?",
               style: Theme.of(context).textTheme.titleMedium,
             ),
             actions: [
@@ -118,7 +123,7 @@ class TranslationSelectionPage extends HookConsumerWidget
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
                   // Go to edit page for word
-                  goToEditWordPage(selectedTranslation, pages);
+                  goToEditWordPage(selectedTranslation, pages, fullWordPart);
                 },
                 child: Text("Yes",
                     style: Theme.of(context)

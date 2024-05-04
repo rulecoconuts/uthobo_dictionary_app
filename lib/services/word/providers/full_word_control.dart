@@ -54,4 +54,9 @@ class FullWordControl extends _$FullWordControl
       WordPartDomainObject wordPart) async {
     return (await wordPartService()).update(wordPart);
   }
+
+  Future<WordPartDomainObject> createWordPart(
+      WordPartDomainObject model) async {
+    return await (await wordPartService()).create(model);
+  }
 }
