@@ -89,8 +89,19 @@ class TranslationSelectionPage extends HookConsumerWidget
       ValueNotifier<FullWordPart?> selectedTranslation,
       ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
       FullWordPart wordToEdit) {
-    router().push(Constants.sourceWordViewRoutePath,
-        extra: <String, dynamic>{"full_word": wordToEdit});
+    router().push(Constants.sourceWordViewRoutePath, extra: <String, dynamic>{
+      "full_word": wordToEdit,
+      "on_cancel": () {
+        // if part has been added to word. Select it
+        if (wordToEdit.containsPart(part)) {
+          selectedTranslation.value = wordToEdit;
+        }
+        // if selected translation no longer contains part. Unselect it
+        else if (selectedTranslation.value == wordToEdit) {
+          selectedTranslation.value = null;
+        }
+      }
+    });
   }
 
   void showWordWithoutRequiredPartWarning(

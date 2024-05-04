@@ -46,7 +46,10 @@ class WordRouteListGenerator extends RouteListGenerator {
           builder: (context, state) {
             var args = state.extra as Map<String, dynamic>;
 
-            return SourceWordViewPage(fullWord: args["full_word"]);
+            return SourceWordViewPage(
+              fullWord: args["full_word"],
+              onCancel: args["on_cancel"],
+            );
           })
     ];
   }

@@ -15,7 +15,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SourceWordViewPage extends HookConsumerWidget with RoutingUtilsAccessor {
   final FullWordPart fullWord;
-  const SourceWordViewPage({required this.fullWord, super.key});
+  final Function()? onCancel;
+  const SourceWordViewPage({required this.fullWord, this.onCancel, super.key});
 
   Future<String?> updateWord(WordDomainObject word, WidgetRef ref) async {
     try {
@@ -56,7 +57,9 @@ class SourceWordViewPage extends HookConsumerWidget with RoutingUtilsAccessor {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10).copyWith(top: 30),
-                child: GoBackPanel(),
+                child: GoBackPanel(
+                  onTap: onCancel,
+                ),
               ),
               Padding(
                   padding: const EdgeInsets.only(top: 50),
