@@ -76,6 +76,7 @@ class WordPartView extends HookConsumerWidget {
                       maxLines: 100,
                       maxLength: 2000,
                       initial: pairNotif.value.wordPart.definition,
+                      plainPlaceholder: "Enter definition",
                       inputDecoration: InputDecoration(
                           hintText: "Enter definition",
                           hintStyle: Theme.of(context)
@@ -117,6 +118,7 @@ class WordPartView extends HookConsumerWidget {
                         maxLength: 7200,
                         initial: pairNotif.value.wordPart.note,
                         label: "Note",
+                        plainPlaceholder: "Enter note",
                         inputDecoration: InputDecoration(
                             hintText: "Enter note",
                             hintStyle: Theme.of(context)

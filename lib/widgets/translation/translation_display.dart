@@ -53,7 +53,7 @@ class TranslationDisplay extends HookConsumerWidget {
 
         // Note
         Padding(
-            padding: const EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.only(top: 4),
             child: EditableTextView(
                 onEdit: (newNote) async {
                   // Update note
@@ -68,6 +68,7 @@ class TranslationDisplay extends HookConsumerWidget {
                   return null;
                 },
                 label: "Note",
+                plainPlaceholder: "Enter translation note",
                 minLines: 2,
                 maxLines: 100,
                 maxLength: 7200,

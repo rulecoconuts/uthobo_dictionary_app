@@ -62,9 +62,18 @@ class SourceWordViewPage extends HookConsumerWidget with RoutingUtilsAccessor {
                 ),
               ),
               Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  "${translationContext.value?.source.name} -> ${translationContext.value?.target.name}",
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Padding(
                   padding: const EdgeInsets.only(top: 50),
                   child: EditableTextView(
                       initial: wordNotif.value.word.name,
+                      isPlainExpanded: false,
                       onEdit: (newName) async {
                         // Save new name
                         String? error = await updateWord(
@@ -93,7 +102,7 @@ class SourceWordViewPage extends HookConsumerWidget with RoutingUtilsAccessor {
               Expanded(
                   child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10)
-                          .copyWith(top: 15),
+                          .copyWith(top: 15, bottom: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

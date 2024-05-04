@@ -16,6 +16,8 @@ class EditableTextView extends HookWidget {
   final int? minLines;
   final int? maxLines;
   final int? maxLength;
+  final String? plainPlaceholder;
+  final bool isPlainExpanded;
 
   const EditableTextView(
       {this.initial,
@@ -31,6 +33,8 @@ class EditableTextView extends HookWidget {
       this.minLines,
       this.maxLines,
       this.maxLength,
+      this.plainPlaceholder,
+      this.isPlainExpanded = true,
       super.key});
 
   Widget generateEditIcon(BuildContext context) {
@@ -82,13 +86,14 @@ class EditableTextView extends HookWidget {
         if (label != null)
           // LABEL
           Padding(
-              padding: const EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     label!,
                     style: Theme.of(context).textTheme.titleSmall,
+                    textAlign: TextAlign.left,
                   ),
                   if (!isEditing.value)
                     Padding(
@@ -143,16 +148,40 @@ class EditableTextView extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                currentText.value,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.merge(textStyle ?? textBoxStyle),
-              ),
+              if (isPlainExpanded)
+                Expanded(
+                    child: Text(
+                  currentText.value.isEmpty
+                      ? plainPlaceholder ?? ""
+                      : currentText.value,
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.merge(textStyle ?? textBoxStyle)
+                      .copyWith(
+                          color: currentText.value.isEmpty
+                              ? Colors.grey.shade700
+                              : null),
+                ))
+              else
+                Text(
+                  currentText.value.isEmpty
+                      ? plainPlaceholder ?? ""
+                      : currentText.value,
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.merge(textStyle ?? textBoxStyle)
+                      .copyWith(
+                          color: currentText.value.isEmpty
+                              ? Colors.grey.shade700
+                              : null),
+                ),
               if (label == null)
                 Padding(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.only(left: 10),
                     child: InkWell(
                       onTap: () => isEditing.value = true,
                       child: generateEditIcon(context),
