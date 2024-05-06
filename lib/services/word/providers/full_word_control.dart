@@ -59,4 +59,8 @@ class FullWordControl extends _$FullWordControl
       WordPartDomainObject model) async {
     return await (await wordPartService()).create(model);
   }
+
+  Future<bool> deleteWordPart(WordPartDomainObject wordPart) async {
+    return await (await wordPartService()).delete(wordPart);
+  }
 }

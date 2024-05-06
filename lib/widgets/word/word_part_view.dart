@@ -15,12 +15,19 @@ import 'package:dictionary_app/widgets/word/word_part_translation_fetch_list_vie
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class WordPartView extends HookConsumerWidget {
   final PartWordPartPair partWordPair;
   final WordDomainObject word;
+  final Function(PartWordPartPair pair) onDelete;
+  final bool showDeleteButton;
   const WordPartView(
-      {required this.partWordPair, required this.word, super.key});
+      {required this.partWordPair,
+      required this.word,
+      required this.onDelete,
+      this.showDeleteButton = true,
+      super.key});
 
   Future<String?> updateWordPart(
       WordPartDomainObject wordPart, WidgetRef ref) async {
@@ -41,6 +48,16 @@ class WordPartView extends HookConsumerWidget {
     }
   }
 
+  Future delete(WidgetRef ref) async {
+    ref
+        .read(fullWordControlProvider(
+                "%%", LanguageDomainObject(name: "", id: word.languageId))
+            .notifier)
+        .deleteWordPart(partWordPair.wordPart);
+
+    onDelete(partWordPair);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var translationContext = ref.watch(translationContextControlProvider);
@@ -54,22 +71,36 @@ class WordPartView extends HookConsumerWidget {
       children: [
         // PART NAME DISPLAY
         Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: RoundedRectangleTextTag(
-            text: pairNotif.value.part.name,
-            filled: true,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Row(
+            children: [
+              RoundedRectangleTextTag(
+                text: pairNotif.value.part.name,
+                filled: true,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: InkWell(
+                    onTap: () => delete(ref),
+                    child: Icon(
+                      MdiIcons.delete,
+                      color: Colors.red,
+                    )),
+              )
+            ],
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: 20),
+          padding: const EdgeInsets.only(left: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               // DEFINITION TEXTBOX
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Padding(
-                  padding: EdgeInsets.zero,
+                  padding: const EdgeInsets.only(top: 5),
                   child: EditableTextView(
                       label: "Definition",
                       minLines: 2,

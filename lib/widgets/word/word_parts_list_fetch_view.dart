@@ -59,6 +59,7 @@ class WordPartsListFetchView extends HookConsumerWidget
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var wordNotif = useState(fullWord);
+    bool shouldshowWordPartDeleteButton = wordNotif.value.parts.length > 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,6 +69,12 @@ class WordPartsListFetchView extends HookConsumerWidget
             .map((pair) => WordPartView(
                   partWordPair: pair,
                   word: wordNotif.value.word,
+                  showDeleteButton: shouldshowWordPartDeleteButton,
+                  onDelete: (pair) {
+                    // Word part has been deleted. Update state to reflect that/
+                    wordNotif.value.parts.remove(pair);
+                    wordNotif.notifyListeners();
+                  },
                 ))
             .cast<Widget>()
             .separator(() => const Padding(padding: EdgeInsets.only(top: 25))),
