@@ -1,6 +1,7 @@
 import 'package:dictionary_app/accessors/routing_utils_accessor.dart';
 import 'package:dictionary_app/services/constants/constants.dart';
 import 'package:dictionary_app/services/language/providers/translation_context_control.dart';
+import 'package:dictionary_app/services/language/translation_context_domain_object.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
 import 'package:dictionary_app/services/pagination/api_page_details.dart';
 import 'package:dictionary_app/services/pagination/api_sort.dart';
@@ -12,6 +13,7 @@ import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_car
 import 'package:dictionary_app/widgets/helper_widgets/shared_main_loading_widget.dart';
 import 'package:dictionary_app/widgets/search/search_box_widget.dart';
 import 'package:dictionary_app/widgets/translation_context/translation_context_widget.dart';
+import 'package:dictionary_app/widgets/word/word_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -70,6 +72,24 @@ class WordListPage extends HookConsumerWidget with RoutingUtilsAccessor {
   void goToWordViewPage(FullWordPart word) {
     router().push(Constants.sourceWordViewRoutePath,
         extra: <String, dynamic>{"full_word": word});
+  }
+
+  void deleteWord(
+      FullWordPart word,
+      ValueNotifier<Map<int, ApiPage<FullWordPart>>> pages,
+      TranslationContextDomainObject translationContext,
+      ValueNotifier<String> searchVal,
+      ValueNotifier<ApiPageDetails> currentPageDetails,
+      WidgetRef ref) {
+    ref
+        .read(fullWordControlProvider(
+                PaginationHelper().sanitizeSearchString(searchVal.value),
+                translationContext.source,
+                pageDetails: currentPageDetails.value)
+            .notifier)
+        .deleteWord(word.word);
+    PaginationHelper().remove(pages.value, word);
+    pages.notifyListeners();
   }
 
   @override
@@ -179,11 +199,17 @@ class WordListPage extends HookConsumerWidget with RoutingUtilsAccessor {
                                 itemCount: words.length,
                                 itemBuilder: (context, index) {
                                   var word = words[index];
-                                  return InkWell(
-                                    onTap: () => goToWordViewPage(word),
-                                    child: RoundedRectangleTextCard(
-                                        text: word.word.name),
-                                  );
+                                  return WordPreview(
+                                      fullWord: word,
+                                      onDeleteRequested: (wordToDelete) =>
+                                          deleteWord(
+                                              word,
+                                              pages,
+                                              translationContext.value!,
+                                              searchVal,
+                                              currentPageDetails,
+                                              ref),
+                                      onClick: goToWordViewPage);
                                 },
                                 separatorBuilder: (context, index) =>
                                     const Padding(

@@ -19,6 +19,12 @@ class PaginationHelper {
         .distinct();
   }
 
+  void remove<T>(Map<int, ApiPage<T>> pages, T item) {
+    pages.values.forEach((element) {
+      element.content.remove(item);
+    });
+  }
+
   /// Get next page details from a map of pages.
   /// The key of the map is assumed to be the page number.
   ApiPageDetails getNextPageDetails<T>(Map<int, ApiPage<T>> pages,
