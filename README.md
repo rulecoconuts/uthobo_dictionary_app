@@ -33,6 +33,7 @@ Pronunciations are mainly audio recordings that may be accompanied by phonetic s
 <ol>
   <li>Release the application to the app store; it is currently distributed privately.</li>
   <li>Use uploaded translation data to create Natural Language Processing translation and recommendation models </li>
+  <li>Add crowd editing feature to sync updates from multiple users</li>
 </ol>
 
 
