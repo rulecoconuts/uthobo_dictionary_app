@@ -101,16 +101,18 @@ class WordPartPronunciationFetchListView extends HookConsumerWidget
     return Column(
       children: [
         ...pronunciationWidgets,
-        WordPartPronunciationUploadListView(
-          wordPart: partWordPair.wordPart,
-          onPronunciationAdded: (newPronunciation) {
-            Timer(Duration(milliseconds: 30), () {
-              addNewPronunciation(pronunciations, newPronunciation);
-            });
-          },
-        ),
         Padding(
-          padding: EdgeInsets.only(top: 15),
+            padding: const EdgeInsets.only(top: 12),
+            child: WordPartPronunciationUploadListView(
+              wordPart: partWordPair.wordPart,
+              onPronunciationAdded: (newPronunciation) {
+                Timer(Duration(milliseconds: 30), () {
+                  addNewPronunciation(pronunciations, newPronunciation);
+                });
+              },
+            )),
+        Padding(
+          padding: const EdgeInsets.only(top: 15),
           child: Row(children: [
             RoundedRectangleTextTagIconButton(
                 icon: Icons.mic,

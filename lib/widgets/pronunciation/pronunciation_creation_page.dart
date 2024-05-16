@@ -59,7 +59,7 @@ class PronunciationCreationPage extends HookConsumerWidget
   }
 
   /// Stop recording audio
-  void stopRecording(
+  Future stopRecording(
       ValueNotifier<RecorderController> recorderController,
       ValueNotifier<PronunciationCreationRequest> pronunciationCreationRequest,
       ValueNotifier<PlayerController> playerController) async {
@@ -120,8 +120,16 @@ class PronunciationCreationPage extends HookConsumerWidget
     pronunciationCreationRequest.notifyListeners();
   }
 
-  void submit(PronunciationCreationRequest pronunciationCreationRequest) {
-    onSubmit(pronunciationCreationRequest);
+  void submit(
+    ValueNotifier<RecorderController> recorderController,
+    ValueNotifier<PronunciationCreationRequest> pronunciationCreationRequest,
+    ValueNotifier<PlayerController> playerController,
+  ) async {
+    if (recorderController.value.isRecording) {
+      await stopRecording(
+          recorderController, pronunciationCreationRequest, playerController);
+    }
+    onSubmit(pronunciationCreationRequest.value);
   }
 
   @override
@@ -335,8 +343,8 @@ class PronunciationCreationPage extends HookConsumerWidget
                     .copyWith(top: 40, bottom: 40),
                 child: RoundedRectangleTextButton(
                     text: "Save",
-                    onPressed: () =>
-                        submit(pronunciationCreationRequest.value)),
+                    onPressed: () => submit(recorderController,
+                        pronunciationCreationRequest, playerController)),
               )
             ],
           ),
