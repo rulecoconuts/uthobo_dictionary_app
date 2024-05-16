@@ -15,10 +15,18 @@ EmailUsernamePasswordAuth _$EmailUsernamePasswordAuthFromJson(
     );
 
 Map<String, dynamic> _$EmailUsernamePasswordAuthToJson(
-        EmailUsernamePasswordAuth instance) =>
-    <String, dynamic>{
-      'email': instance.email,
-      'username': instance.username,
-      'password': instance.password,
-      'type': instance.type,
-    };
+    EmailUsernamePasswordAuth instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('email', instance.email);
+  writeNotNull('username', instance.username);
+  val['password'] = instance.password;
+  val['type'] = instance.type;
+  return val;
+}

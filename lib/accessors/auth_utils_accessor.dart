@@ -5,7 +5,7 @@ import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:get_it/get_it.dart';
 
 mixin AuthUtilsAccessor {
-  SignoutService signoutService() => GetIt.I<SignoutService>();
+  Future<SignoutService> signoutService() => GetIt.I.getAsync<SignoutService>();
   LoginService loginService() => GetIt.I<LoginService>();
   RegistrationService registrationService() => GetIt.I<RegistrationService>();
   Future<AuthStorage> authStorage() => GetIt.I.getAsync<AuthStorage>();

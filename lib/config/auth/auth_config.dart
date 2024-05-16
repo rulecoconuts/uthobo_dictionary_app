@@ -1,3 +1,4 @@
+import 'package:dictionary_app/accessors/auth_utils_accessor.dart';
 import 'package:dictionary_app/accessors/flavor_utils_accessor.dart';
 import 'package:dictionary_app/accessors/serialization_utils_accessor.dart';
 import 'package:dictionary_app/accessors/server_utils_accessor.dart';
@@ -13,10 +14,15 @@ import 'package:dictionary_app/services/storage/hive_backed_app_object_storage.d
 import 'package:get_it/get_it.dart';
 
 class AuthConfig extends IocConfig
-    with SerializationUtilsAccessor, FlavorUtilsAccessor, ServerUtilsAccessor {
+    with
+        SerializationUtilsAccessor,
+        FlavorUtilsAccessor,
+        ServerUtilsAccessor,
+        AuthUtilsAccessor {
   @override
   void config() {
-    GetIt.I.registerLazySingleton(() => SignoutService());
+    GetIt.I.registerLazySingletonAsync(
+        () async => SignoutService(authStorage: await authStorage()));
     GetIt.I.registerLazySingleton<LoginService>(() =>
         SimpleEmailUsernamePasswordLoginService(
             dio: dio(),
