@@ -91,12 +91,50 @@ class SimplePronunciationUploadScheduler
     if (found != null) {
       return PronunciationUploadStatus(
           pronunciationPresignResult: pronunciationPresignResult,
+          progress: 1,
           stage: UploadStage.awaitingPersistence);
     }
 
     return PronunciationUploadStatus(
         pronunciationPresignResult: pronunciationPresignResult,
         stage: UploadStage.doesNotExist);
+  }
+
+  Future<Iterable<PronunciationPresignResult>> _whereInQueue(
+      Queue<PronunciationPresignResult> queue,
+      ReadWriteMutex mutex,
+      bool Function(PronunciationPresignResult r) predicate) async {
+    return await mutex.protectRead(() async => queue.where(predicate).toList());
+  }
+
+  @override
+  Future<List<PronunciationUploadStatus>> checkStatusForWordPart(
+      int wordPartId) async {
+    List<PronunciationUploadStatus> statuses = [];
+
+    // Get Awaiting Persistence uploads
+    statuses.addAll((await _whereInQueue(
+            awaitingPersistence,
+            awaitingPersistenceMutex,
+            (r) => r.pronunciation.wordPartId == wordPartId))
+        .map((e) => PronunciationUploadStatus(
+            pronunciationPresignResult: e,
+            progress: 1,
+            stage: UploadStage.awaitingPersistence)));
+
+    // Get Active uploads
+    statuses.addAll((await _whereInQueue(active, activeMutex,
+            (r) => r.pronunciation.wordPartId == wordPartId))
+        .map((e) => PronunciationUploadStatus(
+            pronunciationPresignResult: e, stage: UploadStage.active)));
+
+    // Get Pending uploads
+    statuses.addAll((await _whereInQueue(pending, pendingMutex,
+            (r) => r.pronunciation.wordPartId == wordPartId))
+        .map((e) => PronunciationUploadStatus(
+            pronunciationPresignResult: e, stage: UploadStage.pending)));
+
+    return statuses;
   }
 
   void _stopActiveVacancyCheckLoop() {
@@ -277,7 +315,7 @@ class SimplePronunciationUploadScheduler
     await _deleteLocalFile(result);
   }
 
-  /// Move to successful queue
+  /// Move to awaiting persistence queue to be recorded in the backend database
   Future _moveToAwaitingPersistenceQueue(
       PronunciationPresignResult result) async {
     await awaitingPersistenceMutex.protectWrite(() async {

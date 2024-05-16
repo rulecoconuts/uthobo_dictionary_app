@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:dictionary_app/accessors/pronunciation_utils_accessor.dart';
@@ -13,6 +14,7 @@ import 'package:dictionary_app/widgets/pronunciation/pronunciation_record_button
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PronunciationCreationPage extends HookConsumerWidget
     with PronunciationUtilsAccessor {
@@ -30,15 +32,30 @@ class PronunciationCreationPage extends HookConsumerWidget
       Key? key})
       : super(key: key);
 
+  Future<String> generateRecordingFilePath() async {
+    var now = DateTime.now();
+    var dir = await getApplicationDocumentsDirectory();
+
+    return "${dir.path}/${now.year}-${now.month}-${now.day}-${now.hour}-${now.minute}-${now.second}-${now.millisecond}.m4a";
+  }
+
   void startRecording(
       ValueNotifier<RecorderController> recorderController,
       ValueNotifier<PronunciationCreationRequest> pronunciationCreationRequest,
       ValueNotifier<PlayerController> playerController) async {
     await deleteRecording(pronunciationCreationRequest, playerController);
 
+    // Test ability to create file
+
     // Start recording
-    recorderController.value.record();
+    recorderController.value.record(path: await generateRecordingFilePath());
     // recorderController.notifyListeners();
+  }
+
+  String generateRandomString(int len) {
+    var r = Random.secure();
+    return String.fromCharCodes(
+        List.generate(len, (index) => r.nextInt(33) + 89));
   }
 
   /// Stop recording audio
@@ -55,6 +72,7 @@ class PronunciationCreationPage extends HookConsumerWidget
 
     File audioFile = File(pronunciationCreationRequest.value.audioUrl);
     pronunciationCreationRequest.value.audioByteSize = audioFile.lengthSync();
+    int k = 9;
     // await playerController.value.preparePlayer(
     //     path: pronunciationCreationRequest.value.audioUrl, noOfSamples: 400);
     // pronunciationCreationRequest.notifyListeners();

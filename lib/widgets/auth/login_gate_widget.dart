@@ -19,7 +19,7 @@ class _LoginGateWidgetState extends State<LoginGateWidget>
   @override
   void initState() {
     super.initState();
-    Timer(Duration(milliseconds: 600), routeToAppropriatePage);
+    Timer(const Duration(milliseconds: 600), routeToAppropriatePage);
   }
 
   /// Decide which page the user should be sent to
