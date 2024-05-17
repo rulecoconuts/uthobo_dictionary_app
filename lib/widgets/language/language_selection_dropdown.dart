@@ -28,7 +28,9 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
       ValueNotifier<LanguageDomainObject?> selectedLanguage,
       ValueNotifier<TextEditingController> textEditController,
       ValueNotifier<bool> isResultsPanelVisible,
-      ValueNotifier<String> groupId) {
+      ValueNotifier<String> groupId,
+      ValueNotifier<Timer?> inputWaitTimer,
+      WidgetRef ref) {
     return TapRegion(
         groupId: groupId.value,
         child: Container(
@@ -41,6 +43,13 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
             namePattern: searchTermNotifier.value,
             onSelectionChanged: (language) => changeSelection(language,
                 selectedLanguage, textEditController, isResultsPanelVisible),
+            onCreated: (newLanguage) {
+              // TODO: Select newly creeated language
+              changeSelection(newLanguage, selectedLanguage, textEditController,
+                  isResultsPanelVisible);
+              onSearchTermChanged(newLanguage.name, searchTermNotifier,
+                  inputWaitTimer, isResultsPanelVisible, ref);
+            },
           ),
         ));
   }
@@ -120,8 +129,14 @@ class LanguageSelectionDropdown extends HookConsumerWidget {
                 offset: Offset(0, 10)),
             offset: Offset(0, 10)),
         portalFollower: isResultsPanelVisible.value
-            ? getSearchPanel(searchTermNotifier, selectedLanguage,
-                textEditController, isResultsPanelVisible, groupId)
+            ? getSearchPanel(
+                searchTermNotifier,
+                selectedLanguage,
+                textEditController,
+                isResultsPanelVisible,
+                groupId,
+                inputWaitTimer,
+                ref)
             : null,
         child: TapRegion(
             groupId: groupId.value,

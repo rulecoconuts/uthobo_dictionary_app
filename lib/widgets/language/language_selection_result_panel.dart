@@ -16,9 +16,11 @@ class LanguageSelectionResultPanel extends HookConsumerWidget {
   final String namePattern;
   final ApiPageDetails initialPageDetails;
   final Function(LanguageDomainObject language) onSelectionChanged;
+  final Function(LanguageDomainObject newLanguage) onCreated;
   const LanguageSelectionResultPanel(
       {required this.namePattern,
       required this.onSelectionChanged,
+      required this.onCreated,
       this.initialPageDetails =
           const ApiPageDetails(sortFields: [ApiSort(name: "name")]),
       Key? key})

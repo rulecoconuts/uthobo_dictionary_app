@@ -19,6 +19,7 @@ class LanguageSelectionRouteListGenerator extends RouteListGenerator {
             return LanguageCreationPage(
               previousSearchString: args["previous_search_string"],
               previousPageDetails: args["previous_page_details"],
+              onCreated: args["on_created"],
             );
           }),
     ];

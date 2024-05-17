@@ -13,8 +13,12 @@ class LanguageCreationPage extends HookConsumerWidget
     with RoutingUtilsAccessor {
   final String? previousSearchString;
   final ApiPageDetails? previousPageDetails;
+  final Function(LanguageDomainObject newLanguage)? onCreated;
   const LanguageCreationPage(
-      {this.previousSearchString, this.previousPageDetails, Key? key})
+      {this.previousSearchString,
+      this.previousPageDetails,
+      this.onCreated,
+      Key? key})
       : super(key: key);
 
   void create(
@@ -29,12 +33,14 @@ class LanguageCreationPage extends HookConsumerWidget
       LanguageDomainObject newLanguage = LanguageDomainObject(
           name: formValues.value["name"]!,
           description: formValues.value["description"]);
-      await ref
+      LanguageDomainObject created = await ref
           .read(languageControlProvider(
                   previousSearchString ?? newLanguage.name,
                   previousPageDetails ?? ApiPageDetails())
               .notifier)
           .create(newLanguage);
+
+      onCreated?.call(created);
 
       router().pop();
     } on ApiError catch (e, stackTrace) {

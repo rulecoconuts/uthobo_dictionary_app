@@ -22,8 +22,11 @@ class LanguageControl extends _$LanguageControl with LanguageUtilsAccessor {
     return results;
   }
 
-  Future create(LanguageDomainObject newLanguage) async {
-    await (await languageDomainService()).create(newLanguage);
+  Future<LanguageDomainObject> create(LanguageDomainObject newLanguage) async {
+    LanguageDomainObject created =
+        await (await languageDomainService()).create(newLanguage);
     ref.invalidateSelf();
+
+    return created;
   }
 }
