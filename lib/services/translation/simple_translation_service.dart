@@ -1,6 +1,7 @@
 import 'package:dictionary_app/services/foundation/creation_service.dart';
 import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
+import 'package:dictionary_app/services/language/translation_context_domain_object.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_backed_domain_service_mixin.dart';
 import 'package:dictionary_app/services/server/simple_rest_service_mixin.dart';
 import 'package:dictionary_app/services/translation/remote/remote_translation.dart';
@@ -33,5 +34,10 @@ class SimpleTranslationService
   @override
   RemoteTranslation toRemote(TranslationDomainObject model) {
     return RemoteTranslation.fromDomain(model);
+  }
+
+  @override
+  Future<bool> isContextValid(TranslationContextDomainObject context) async {
+    return await translationRESTService.isContextValid(context);
   }
 }
