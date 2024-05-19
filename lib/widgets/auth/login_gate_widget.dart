@@ -37,7 +37,7 @@ class _LoginGateWidgetState extends State<LoginGateWidget>
       // auth is valid
 
       // Go to home page
-      router().go("/language_selection");
+      router().go(Constants.translationContextGateRoutePath);
     } catch (e, stackTrace) {
       router().go("/welcome");
     }

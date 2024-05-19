@@ -25,7 +25,8 @@ class TranslationContextControl extends _$TranslationContextControl
     String? serial = await storage.get(localKey);
     TranslationContextDomainObject? translationContext = serial == null
         ? null
-        : serializationUtils().deserialize(json.decode(serial));
+        : serializationUtils()
+            .deserialize<TranslationContextDomainObject>(json.decode(serial));
 
     if (translationContext == null) return null;
 

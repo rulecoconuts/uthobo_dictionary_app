@@ -1,6 +1,7 @@
 import 'package:dictionary_app/config/ioc_config.dart';
 import 'package:dictionary_app/services/auth/login/auth.dart';
 import 'package:dictionary_app/services/language/remote/remote_language.dart';
+import 'package:dictionary_app/services/language/translation_context_domain_object.dart';
 import 'package:dictionary_app/services/part_of_speech/part_of_speech_domain_object.dart';
 import 'package:dictionary_app/services/part_of_speech/remote/remote_part_of_speech.dart';
 import 'package:dictionary_app/services/pronunciation/pronunciation_presign_result.dart';
@@ -37,6 +38,7 @@ class SerializationConfig extends IocConfig {
       ..addDeserializer(RemoteWord.fromJson)
       ..addDeserializer(PronunciationPresignResult.fromJson)
       ..addDeserializer(FullTranslation.fromJson)
-      ..addDeserializer(RemoteTranslation.fromJson));
+      ..addDeserializer(RemoteTranslation.fromJson)
+      ..addDeserializer(TranslationContextDomainObject.fromJson));
   }
 }

@@ -12,7 +12,7 @@ class WordRouteListGenerator extends RouteListGenerator {
   List<RouteBase> generate() {
     return [
       GoRoute(
-        path: "/word_list",
+        path: Constants.wordListRoutePath,
         builder: (context, state) {
           return WordListPage();
         },
