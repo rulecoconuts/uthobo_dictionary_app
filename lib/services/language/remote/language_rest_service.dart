@@ -5,6 +5,7 @@ import 'package:dictionary_app/services/auth/login/login_service_auth_storage_au
 import 'package:dictionary_app/services/auth/login/web_service_mixin.dart';
 import 'package:dictionary_app/services/auth/storage/auth_storage.dart';
 import 'package:dictionary_app/services/foundation/creation_service.dart';
+import 'package:dictionary_app/services/foundation/delete_service.dart';
 import 'package:dictionary_app/services/foundation/update_service.dart';
 import 'package:dictionary_app/services/language/remote/remote_language.dart';
 import 'package:dictionary_app/services/pagination/api_page.dart';
@@ -21,7 +22,8 @@ class LanguageRESTService
         LoginServiceAuthStorageAuthBackedWebServiceMixin,
         CreationService<RemoteLanguage>,
         UpdateService<RemoteLanguage>,
-        SimpleDioBackedRESTServiceMixin {
+        DeletionService<RemoteLanguage>,
+        SimpleDioBackedRESTServiceMixin<RemoteLanguage> {
   final AuthStorage authStorage;
   final LoginService loginService;
   final Dio dio;

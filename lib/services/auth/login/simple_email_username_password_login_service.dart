@@ -55,7 +55,7 @@ class SimpleEmailUsernamePasswordLoginService
 
   Future<JwtAuth> refresh(JwtAuth jwtAuth) async {
     try {
-      var response = await dio.post("${serverDetails.url}/users/refresh",
+      var response = await dio.get("${serverDetails.url}/users/refresh",
           options: Options(headers: {
             HttpHeaders.authorizationHeader: "Bearer ${jwtAuth.token}",
             if (jwtAuth.refreshToken != null)

@@ -7,7 +7,7 @@ part of 'api_error.dart';
 // **************************************************************************
 
 ApiError _$ApiErrorFromJson(Map<String, dynamic> json) => ApiError(
-      status: json['status'] as String,
+      status: SerializationUtils.forceDeserializeToString(json['status']),
       timestamp: json['timestamp'] == null
           ? null
           : DateTime.parse(json['timestamp'] as String),

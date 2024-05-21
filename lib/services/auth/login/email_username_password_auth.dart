@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'email_username_password_auth.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class EmailUsernamePasswordAuth extends Auth {
   String? email;
   String? username;

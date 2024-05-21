@@ -23,4 +23,11 @@ class SimpleRESTBackedDomainLanguageService implements LanguageService {
             pageDetails: pageDetails))
         .map((t) => t.toDomain());
   }
+
+  @override
+  Future<List<LanguageDomainObject>> createAll(
+      List<LanguageDomainObject> models) {
+    // TODO: implement createAll
+    throw UnimplementedError();
+  }
 }

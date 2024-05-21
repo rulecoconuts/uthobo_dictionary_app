@@ -19,7 +19,7 @@ class _LoginGateWidgetState extends State<LoginGateWidget>
   @override
   void initState() {
     super.initState();
-    Timer(Duration(milliseconds: 600), routeToAppropriatePage);
+    Timer(const Duration(milliseconds: 600), routeToAppropriatePage);
   }
 
   /// Decide which page the user should be sent to
@@ -37,7 +37,7 @@ class _LoginGateWidgetState extends State<LoginGateWidget>
       // auth is valid
 
       // Go to home page
-      router().go("/language_selection");
+      router().go(Constants.translationContextGateRoutePath);
     } catch (e, stackTrace) {
       router().go("/welcome");
     }

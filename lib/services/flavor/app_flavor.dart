@@ -1,1 +1,1 @@
-enum AppFlavor { DEV, PRODUCTION, UAT }
+enum AppFlavor { DEV, PRODUCTION, UAT, LOCAL }

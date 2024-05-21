@@ -3,6 +3,7 @@ import 'package:dictionary_app/accessors/user_utils_accessor.dart';
 import 'package:dictionary_app/services/list/list_separator_extension.dart';
 import 'package:dictionary_app/services/server/api_error.dart';
 import 'package:dictionary_app/services/user/remote/remote_app_user.dart';
+import 'package:dictionary_app/widgets/helper_widgets/rounded_rectangle_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_validator/form_validator.dart';
@@ -245,29 +246,16 @@ class RegistrationPage extends HookWidget
                       Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15)
                               .copyWith(bottom: 40, top: 50),
-                          child: TextButton(
-                              onPressed: isLoading.value
-                                  ? null
-                                  : () => register(
-                                      formKey.value,
-                                      error,
-                                      isLoading,
-                                      shouldAutoValidateOnUserInteraction,
-                                      credentials.value),
-                              style: ButtonStyle(
-                                  backgroundColor: isLoading.value
-                                      ? MaterialStateProperty.all(Colors.grey)
-                                      : null),
-                              child: Text(
-                                "Register",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              )))
+                          child: RoundedRectangleTextButton(
+                            onPressed: () => register(
+                                formKey.value,
+                                error,
+                                isLoading,
+                                shouldAutoValidateOnUserInteraction,
+                                credentials.value),
+                            enabled: !isLoading.value,
+                            text: "Register",
+                          ))
                     ],
                   ),
                 )

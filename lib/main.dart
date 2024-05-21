@@ -35,6 +35,10 @@ class MyApp extends StatelessWidget with RoutingUtilsAccessor {
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
         fontFamily: 'Poppins',
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: Color(0xFF203354),
+            shape: CircleBorder(),
+            largeSizeConstraints: BoxConstraints.tight(Size(80, 80))),
         inputDecorationTheme: InputDecorationTheme(
             border: OutlineInputBorder(
               borderSide: BorderSide(width: 2),
@@ -52,10 +56,16 @@ class MyApp extends StatelessWidget with RoutingUtilsAccessor {
                     borderRadius: BorderRadius.circular(12))),
                 backgroundColor: MaterialStateProperty.all(Color(0xFF203354)))),
         textTheme: TextTheme(
-          bodyMedium: TextStyle(color: Colors.black, fontSize: 15),
-        ),
+            bodyMedium: TextStyle(color: Colors.black, fontSize: 15),
+            titleSmall: TextStyle(
+                color: Color(0xFF575353),
+                fontSize: 20,
+                fontWeight: FontWeight.w500)),
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(0xFF203354), primary: Color(0xFF203354)),
+          seedColor: Color(0xFF203354),
+          primary: Color(0xFF203354),
+          secondary: Color(0xFF5C6B85),
+        ),
         useMaterial3: true,
       ),
       routerDelegate: router().routerDelegate,
