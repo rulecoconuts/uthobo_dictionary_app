@@ -34,7 +34,7 @@ class SearchBoxWidget extends HookWidget {
       textEditController.value.text = initialSearchString ?? "";
 
       return () => textEditController.value.removeListener(onTextEditted);
-    }, [textEditController.value]);
+    }, [initialSearchString]);
 
     return TextFormField(
       controller: textEditController.value,

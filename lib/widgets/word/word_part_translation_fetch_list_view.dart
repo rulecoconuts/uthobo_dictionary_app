@@ -90,22 +90,29 @@ class WordPartTranslationFetchList extends HookConsumerWidget
       translations.value.addAll(newList);
     }
 
-    if (translations.value.isEmpty)
-      return Text(
-        "No translations",
-        style: Theme.of(context).textTheme.bodyMedium,
-      );
+    // if (translations.value.isEmpty)
+    //   return Text(
+    //     "No translations",
+    //     style: Theme.of(context).textTheme.bodyMedium,
+    //   );
 
     return Column(
       children: [
-        ...translations.value
-            .map((e) => TranslationDisplay(
-                  translation: e,
-                  translationContext: translationContext,
-                ))
-            .cast<Widget>()
-            .toList()
-            .separator(() => const Padding(padding: EdgeInsets.only(top: 20))),
+        if (translations.value.isEmpty)
+          Text(
+            "No translations",
+            style: Theme.of(context).textTheme.bodyMedium,
+          )
+        else
+          ...translations.value
+              .map((e) => TranslationDisplay(
+                    translation: e,
+                    translationContext: translationContext,
+                  ))
+              .cast<Widget>()
+              .toList()
+              .separator(
+                  () => const Padding(padding: EdgeInsets.only(top: 20))),
         Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Row(children: [
